@@ -1,4 +1,4 @@
-res/values/strings.xml
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">My OneUI App</string>
     <string name="nav_home">Home</string>
@@ -16,5 +16,4 @@ res/values/strings.xml
     <string name="button_ok">OK</string>
     <string name="button_cancel">Cancel</string>
     <string name="help_text">This is some helpful descriptive text.</string>
-    <!-- أضف هنا سائر النصوص الأخرى المطلوبة -->
 </resources>
