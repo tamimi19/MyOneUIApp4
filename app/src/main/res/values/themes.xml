@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base application theme using Material Design with OneUI styling -->
-    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Primary brand color -->
-        <item name="colorPrimary">@android:color/holo_blue_light</item>
-        <item name="colorPrimaryVariant">@android:color/holo_blue_dark</item>
-        <item name="colorOnPrimary">@android:color/white</item>
+    <!-- OneUI Theme الأساسي -->
+    <style name="OneUITheme" parent="Theme.OneUI.DayNight.NoActionBar">
+        <!-- الألوان الأساسية -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorControlActivated">@color/colorControlActivated</item>
         
-        <!-- Secondary brand color -->
-        <item name="colorSecondary">@android:color/holo_green_light</item>
-        <item name="colorSecondaryVariant">@android:color/holo_green_dark</item>
-        <item name="colorOnSecondary">@android:color/black</item>
+        <!-- ألوان النص والخلفية -->
+        <item name="android:textColorPrimary">?android:attr/textColorPrimary</item>
+        <item name="android:textColorSecondary">?android:attr/textColorSecondary</item>
         
-        <!-- Status bar color -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- شريط الحالة -->
+        <item name="android:statusBarColor">?attr/colorPrimaryDark</item>
+        <item name="android:windowLightStatusBar">false</item>
         
-        <!-- Enable window content transitions -->
+        <!-- تفعيل انتقالات النوافذ -->
         <item name="android:windowContentTransitions">true</item>
+    </style>
+
+    <!-- ثيم إضافي للمواد (اختياري) -->
+    <style name="AppTheme" parent="OneUITheme">
+        <!-- يمكن إضافة تخصيصات إضافية هنا -->
     </style>
 </resources>
