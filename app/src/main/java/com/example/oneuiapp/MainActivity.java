@@ -8,8 +8,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
-import dev.oneuiproject.oneui.widget.TipPopup;
+import java.util.List;
+import java.util.ArrayList;
+
+// استبدال TipPopup بـ Toast أو Snackbar كبديل مؤقت
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,15 +27,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-    // تهيئة قائمة الـ Drawer
+        // تهيئة قائمة الـ Drawer
         initFragments();
         initDrawer();
 
-        // مثال لإظهار تنبيه TipPopup على شريط الأدوات
-        TipPopup tip = new TipPopup(findViewById(R.id.toolbar), TipPopup.MODE_TRANSLUCENT);
-        tip.setMessage("مرحباً! قم بسحب القائمة لأعلى ولأسفل.");
-        tip.setAction("إغلاق", v -> {});
-        tip.show(TipPopup.DIRECTION_BOTTOM_RIGHT);
+        // استبدال TipPopup بـ Toast كبديل مؤقت
+        Toast.makeText(this, "مرحباً! قم بسحب القائمة لأعلى ولأسفل.", Toast.LENGTH_LONG).show();
     }
 
     private void initFragments() {
