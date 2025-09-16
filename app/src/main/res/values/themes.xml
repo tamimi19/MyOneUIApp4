@@ -1,0 +1,6 @@
+res/values/themes.xml
+<resources>
+    <style name="AppTheme" parent="OneUITheme">
+        <!-- يمكن إضافة تخصيصات إضافية هنا إذا لزم الأمر -->
+    </style>
+</resources>
