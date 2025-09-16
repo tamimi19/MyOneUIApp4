@@ -1,20 +1,19 @@
-res/values-ar/strings.xml
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">تطبيقي بوحدات One UI</string>
+    <string name="app_name">تطبيق OneUI الخاص بي</string>
     <string name="nav_home">الرئيسية</string>
     <string name="nav_settings">الإعدادات</string>
-    <string name="menu_theme">الثيم</string>
+    <string name="menu_theme">السمة</string>
     <string name="menu_language">اللغة</string>
     <string name="notification_title">إشعار</string>
     <string name="theme_light">فاتح</string>
     <string name="theme_dark">داكن</string>
     <string name="theme_system">افتراضي النظام</string>
-    <string name="language_english">الإنجليزية</string>
+    <string name="language_english">English</string>
     <string name="language_arabic">العربية</string>
     <string name="screen_title">عنوان الشاشة</string>
     <string name="preference_title">عنوان التفضيل</string>
     <string name="button_ok">موافق</string>
     <string name="button_cancel">إلغاء</string>
-    <string name="help_text">هذا نص توضيحي يساعد المستخدم.</string>
-    <!-- أضف هنا سائر النصوص الأخرى المطلوبة -->
+    <string name="help_text">هذا نص وصفي مفيد.</string>
 </resources>
