@@ -23,9 +23,17 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    // إضافة packagingOptions لحل تضارب المساحات بين picker libraries
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+            excludes += '/META-INF/DEPENDENCIES'
+        }
+    }
 }
 
-// إزالة مكتبات Google الأصلية (مطلوب حسب التوثيق)
+// إزالة مكتبات Google الأصلية - مطلوب للعمل مع SESL
 configurations.all {
     exclude group: 'androidx.appcompat', module: 'appcompat'
     exclude group: 'androidx.core', module: 'core'
@@ -33,7 +41,7 @@ configurations.all {
 }
 
 dependencies {
-    // OneUI Core Libraries (الأساسية)
+    // OneUI Core Libraries (SESL) - الطبقة الأساسية التي تحل محل مكتبات Google
     implementation 'io.github.oneuiproject.sesl:appcompat:1.4.0'
     implementation 'io.github.oneuiproject.sesl:material:1.5.0'
     implementation 'io.github.oneuiproject.sesl:coordinatorlayout:1.0.0'
@@ -41,11 +49,15 @@ dependencies {
     implementation 'io.github.oneuiproject.sesl:recyclerview:1.4.1'
     implementation 'io.github.oneuiproject.sesl:preference:1.1.0'
     
-    // OneUI Design Library (للثيمات والمكونات)
+    // OneUI Design Library - الطبقة العليا للمكونات المخصصة
     implementation 'io.github.oneuiproject:design:1.2.6'
     
-    // Picker Libraries (اختياري)
+    // Picker Libraries مع حل تضارب المساحات
     implementation 'io.github.oneuiproject.sesl:picker-basic:1.2.0'
-    implementation 'io.github.oneuiproject.sesl:picker-color:1.1.0'
+    implementation ('io.github.oneuiproject.sesl:picker-color:1.1.0') {
+        exclude group: 'androidx.picker'  // منع تضارب picker namespaces
+    }
+    
+    // أيقونات OneUI
     implementation 'io.github.oneuiproject:icons:1.1.0'
 }
