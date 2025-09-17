@@ -47,4 +47,5 @@ dependencies {
     // Picker Libraries (اختياري)
     implementation 'io.github.oneuiproject.sesl:picker-basic:1.2.0'
     implementation 'io.github.oneuiproject.sesl:picker-color:1.1.0'
+    implementation 'io.github.oneuiproject:icons:1.1.0'
 }
