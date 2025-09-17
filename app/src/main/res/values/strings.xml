@@ -16,4 +16,7 @@
     <string name="button_ok">OK</string>
     <string name="button_cancel">Cancel</string>
     <string name="help_text">This is some helpful descriptive text.</string>
+    
+    <!-- مطلوب لـ CoordinatorLayout behavior -->
+    <string name="appbar_scrolling_view_behavior" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
 </resources>
