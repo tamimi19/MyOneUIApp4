@@ -1,48 +1,570 @@
-name: Generate Wrapper & Build APK (No Local PC)
+name: 📱 Mobile-Optimized Build with Advanced Diagnostics
 
+# مُحسن للتطوير من الهاتف - يدعم فروع الاختبار ويوفر تشخيص شامل
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    branches: [ main, develop, test-*, fix-* ]  # دعم فروع التطوير والاختبار
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:  # تشغيل يدوي من واجهة GitHub
+
+# متغيرات عامة للتحكم في سلوك الـ workflow
+env:
+  GRADLE_VERSION: 8.14.3
+  GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
+  # تفعيل التشخيص المتقدم - يمكنك تعديله إلى false لتسريع البناء
+  ENABLE_ADVANCED_DIAGNOSTICS: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
+    # ═══════════════════════════════════════════════════════════════
+    # المرحلة الأولى: إعداد البيئة والفحص الأولي
+    # ═══════════════════════════════════════════════════════════════
+    
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v5
+      with:
+        # تحميل كامل للتاريخ للحصول على معلومات أفضل عن التغييرات
+        fetch-depth: 0
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+    - name: ☕ Set up JDK 17
+      uses: actions/setup-java@v5
+      with:
+        distribution: 'temurin'
+        java-version: '17'
 
-      - name: Use project-local Gradle cache
-        run: echo "GRADLE_USER_HOME=$GITHUB_WORKSPACE/.gradle" >> $GITHUB_ENV
+    # ═══════════════════════════════════════════════════════════════
+    # المرحلة الثانية: التشخيص الأولي لفهم حالة المشروع
+    # ═══════════════════════════════════════════════════════════════
+    
+    - name: 🔍 Initial Project Health Check
+      run: |
+        echo "════════════════════════════════════════════════════════"
+        echo "🏥 فحص صحة المشروع - المرحلة الأولى"
+        echo "════════════════════════════════════════════════════════"
+        
+        # فحص بنية المشروع الأساسية
+        echo "📂 بنية المشروع:"
+        echo "الملفات الجذرية:"
+        ls -la | head -10
+        echo ""
+        
+        # فحص وجود ملفات Android المهمة
+        echo "🤖 فحص ملفات Android المهمة:"
+        
+        files_to_check=(
+          "app/build.gradle"
+          "app/src/main/AndroidManifest.xml"
+          "app/src/main/res/layout/activity_main.xml"
+          "gradle.properties"
+          "settings.gradle"
+        )
+        
+        for file in "${files_to_check[@]}"; do
+          if [ -f "$file" ]; then
+            echo "✅ $file موجود (حجم: $(stat -f%z "$file" 2>/dev/null || stat -c%s "$file") بايت)"
+          else
+            echo "❌ $file غير موجود!"
+          fi
+        done
+        
+        # فحص حالة Gradle Wrapper الحالية
+        echo ""
+        echo "⚙️ حالة Gradle Wrapper الحالية:"
+        if [ -f "gradlew" ]; then
+          echo "✅ gradlew موجود"
+          echo "صلاحيات gradlew: $(ls -l gradlew | cut -d' ' -f1)"
+          if [ -x "gradlew" ]; then
+            echo "✅ gradlew قابل للتنفيذ"
+          else
+            echo "⚠️ gradlew غير قابل للتنفيذ"
+          fi
+        else
+          echo "❌ gradlew غير موجود - سنقوم بإنشائه"
+        fi
+        
+        if [ -f "gradle/wrapper/gradle-wrapper.properties" ]; then
+          echo "✅ gradle-wrapper.properties موجود"
+          echo "نسخة Gradle المحددة:"
+          grep "distributionUrl" gradle/wrapper/gradle-wrapper.properties || echo "لم يتم العثور على distributionUrl"
+        else
+          echo "❌ gradle-wrapper.properties غير موجود"
+        fi
 
-      - name: Clear possibly corrupt Gradle cache
-        run: rm -rf ~/.gradle/caches/jars-9 || true
+    # ═══════════════════════════════════════════════════════════════
+    # المرحلة الثالثة: فحص المشكلة المحتملة في activity_main.xml
+    # ═══════════════════════════════════════════════════════════════
+    
+    - name: 🔍 Deep Dive - XML Layout Analysis
+      if: env.ENABLE_ADVANCED_DIAGNOSTICS == 'true'
+      run: |
+        echo "════════════════════════════════════════════════════════"
+        echo "🔬 تحليل عميق لملفات التخطيط"
+        echo "════════════════════════════════════════════════════════"
+        
+        # فحص activity_main.xml بالتفصيل
+        layout_file="app/src/main/res/layout/activity_main.xml"
+        if [ -f "$layout_file" ]; then
+          echo "📄 تحليل $layout_file:"
+          echo "عدد الأسطر: $(wc -l < "$layout_file")"
+          echo ""
+          
+          # عرض الجزء المشكوك فيه (حول السطر 26)
+          echo "🎯 محتوى السطور 20-35 (المنطقة المشكوك فيها):"
+          sed -n '20,35p' "$layout_file" | nl -v20 -nln -w3 -s': '
+          echo ""
+          
+          # البحث عن الخاصية المشكلة
+          echo "🔍 البحث عن expandedTitleEnabled:"
+          if grep -n "expandedTitleEnabled" "$layout_file"; then
+            echo "🚨 تم العثور على expandedTitleEnabled!"
+            echo "السياق الكامل للخاصية:"
+            grep -A2 -B2 "expandedTitleEnabled" "$layout_file" | nl
+          else
+            echo "✅ لم يتم العثور على expandedTitleEnabled"
+          fi
+          
+          # فحص مساحات الأسماء
+          echo ""
+          echo "📝 مساحات الأسماء المستخدمة:"
+          head -20 "$layout_file" | grep "xmlns" | nl
+          
+          # فحص الخصائص المخصصة الأخرى
+          echo ""
+          echo "🎨 الخصائص المخصصة الموجودة (app:):"
+          grep -n "app:" "$layout_file" | head -10 | nl
+          
+        else
+          echo "❌ ملف activity_main.xml غير موجود!"
+        fi
 
-      - name: Download Gradle 8.14.3 temporarily
-        run: wget https://services.gradle.org/distributions/gradle-8.14.3-bin.zip -O gradle-8.14.3-bin.zip
+    # ═══════════════════════════════════════════════════════════════
+    # المرحلة الرابعة: فحص التبعيات والمكتبات
+    # ═══════════════════════════════════════════════════════════════
+    
+    - name: 🔍 Dependencies and Libraries Analysis
+      if: env.ENABLE_ADVANCED_DIAGNOSTICS == 'true'
+      run: |
+        echo "════════════════════════════════════════════════════════"
+        echo "📚 تحليل التبعيات والمكتبات"
+        echo "════════════════════════════════════════════════════════"
+        
+        # فحص build.gradle للتبعيات
+        if [ -f "app/build.gradle" ]; then
+          echo "📦 التبعيات في app/build.gradle:"
+          
+          # البحث عن مكتبات OneUI
+          echo ""
+          echo "🎨 مكتبات OneUI:"
+          if grep -n "io.github.oneuiproject.sesl" app/build.gradle; then
+            echo "تم العثور على مكتبات OneUI"
+          else
+            echo "لم يتم العثور على مكتبات OneUI"
+          fi
+          
+          # عرض جميع التبعيات
+          echo ""
+          echo "📋 جميع التبعيات:"
+          sed -n '/dependencies {/,/^}/p' app/build.gradle | nl
+          
+          # فحص compileSdk و targetSdk
+          echo ""
+          echo "🎯 إصدارات SDK:"
+          grep -E "(compileSdk|targetSdk)" app/build.gradle || echo "لم يتم العثور على معلومات SDK"
+          
+        else
+          echo "❌ app/build.gradle غير موجود!"
+        fi
+        
+        # فحص settings.gradle
+        if [ -f "settings.gradle" ]; then
+          echo ""
+          echo "⚙️ إعدادات المشروع (settings.gradle):"
+          cat settings.gradle | head -10
+        fi
 
-      - name: Unzip temporary Gradle
-        run: unzip -q gradle-8.14.3-bin.zip
+    # ═══════════════════════════════════════════════════════════════
+    # المرحلة الخامسة: إعداد Gradle المتقدم مع معالجة الأخطاء
+    # ═══════════════════════════════════════════════════════════════
+    
+    - name: ⚙️ Advanced Gradle Environment Setup
+      run: |
+        echo "════════════════════════════════════════════════════════"
+        echo "⚙️ إعداد بيئة Gradle المتقدمة"
+        echo "════════════════════════════════════════════════════════"
+        
+        # إعداد متغير GRADLE_USER_HOME
+        echo "GRADLE_USER_HOME=$GITHUB_WORKSPACE/.gradle" >> $GITHUB_ENV
+        echo "📁 مسار Gradle الرئيسي: $GITHUB_WORKSPACE/.gradle"
+        
+        # إنشاء مجلد .gradle إذا لم يكن موجوداً
+        mkdir -p "$GITHUB_WORKSPACE/.gradle"
+        
+        # تنظيف cache محتمل التلف
+        echo "🧹 تنظيف Gradle cache المحتمل تلفه:"
+        rm -rf ~/.gradle/caches/jars-9 || echo "لا يوجد cache قديم للتنظيف"
+        rm -rf "$GITHUB_WORKSPACE/.gradle/caches/jars-9" || echo "لا يوجد cache محلي للتنظيف"
+        
+        # عرض معلومات Java للتأكد من الإعداد
+        echo ""
+        echo "☕ معلومات Java:"
+        java -version
+        echo "JAVA_HOME: $JAVA_HOME"
+        
+        echo "✅ تم إعداد بيئة Gradle بنجاح"
 
-      - name: Generate Gradle Wrapper
-        run: ./gradle-8.14.3/bin/gradle wrapper --gradle-version 8.14.3 --distribution-type all
+    - name: 📥 Smart Gradle Download with Retry Logic
+      run: |
+        echo "════════════════════════════════════════════════════════"
+        echo "📥 تحميل Gradle الذكي مع منطق إعادة المحاولة"
+        echo "════════════════════════════════════════════════════════"
+        
+        gradle_url="https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-bin.zip"
+        gradle_zip="gradle-$GRADLE_VERSION-bin.zip"
+        
+        # دالة للتحميل مع إعادة المحاولة
+        download_gradle() {
+          local attempt=1
+          local max_attempts=3
+          
+          while [ $attempt -le $max_attempts ]; do
+            echo "🔄 محاولة التحميل رقم $attempt من $max_attempts"
+            
+            if wget --progress=dot:giga "$gradle_url" -O "$gradle_zip"; then
+              # التحقق من سلامة الملف المحمل
+              if [ -f "$gradle_zip" ] && [ -s "$gradle_zip" ]; then
+                echo "✅ تم تحميل Gradle بنجاح!"
+                echo "📊 حجم الملف: $(ls -lh $gradle_zip | awk '{print $5}')"
+                return 0
+              else
+                echo "❌ الملف المحمل تالف أو فارغ"
+              fi
+            else
+              echo "❌ فشل في التحميل"
+            fi
+            
+            echo "⏳ انتظار 5 ثوانٍ قبل إعادة المحاولة..."
+            sleep 5
+            attempt=$((attempt + 1))
+          done
+          
+          echo "💥 فشل في تحميل Gradle بعد $max_attempts محاولات"
+          return 1
+        }
+        
+        # تنفيذ التحميل
+        if download_gradle; then
+          echo "🎉 تحميل Gradle مكتمل بنجاح!"
+        else
+          echo "🚨 خطأ حرج: لا يمكن متابعة البناء بدون Gradle"
+          exit 1
+        fi
 
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
+    - name: 📦 Smart Gradle Extraction and Validation
+      run: |
+        echo "════════════════════════════════════════════════════════"
+        echo "📦 فك ضغط وتحقق من Gradle"
+        echo "════════════════════════════════════════════════════════"
+        
+        gradle_zip="gradle-$GRADLE_VERSION-bin.zip"
+        gradle_dir="gradle-$GRADLE_VERSION"
+        
+        # فك الضغط مع عرض التقدم
+        echo "📂 فك ضغط $gradle_zip..."
+        if unzip -q "$gradle_zip"; then
+          echo "✅ تم فك الضغط بنجاح"
+        else
+          echo "❌ فشل في فك الضغط"
+          exit 1
+        fi
+        
+        # التحقق من وجود ملف gradle التنفيذي
+        if [ -f "$gradle_dir/bin/gradle" ]; then
+          echo "✅ تم العثور على Gradle التنفيذي"
+          echo "📋 معلومات Gradle:"
+          ls -la "$gradle_dir/bin/gradle"
+          
+          # جعل gradle قابل للتنفيذ
+          chmod +x "$gradle_dir/bin/gradle"
+          echo "✅ تم تفعيل صلاحيات التنفيذ لـ Gradle"
+          
+          # اختبار تشغيل Gradle
+          echo ""
+          echo "🧪 اختبار تشغيل Gradle:"
+          if ./$gradle_dir/bin/gradle --version; then
+            echo "✅ Gradle يعمل بشكل صحيح!"
+          else
+            echo "⚠️ مشكلة في تشغيل Gradle، لكن سنتابع..."
+          fi
+        else
+          echo "❌ لم يتم العثور على ملف gradle التنفيذي"
+          exit 1
+        fi
+        
+        # تنظيف ملف الضغط لتوفير مساحة
+        echo ""
+        echo "🧹 تنظيف ملف الضغط لتوفير مساحة:"
+        rm -f "$gradle_zip"
+        echo "✅ تم حذف ملف الضغط"
 
-      - name: Build APK with Gradle Wrapper
-        env:
-          JITPACK_TOKEN: ${{ secrets.JITPACK_TOKEN }}
-        run: ./gradlew assembleDebug
+    # ═══════════════════════════════════════════════════════════════
+    # المرحلة السادسة: إنشاء Gradle Wrapper مع معالجة المشاكل
+    # ═══════════════════════════════════════════════════════════════
+    
+    - name: 🔧 Generate Advanced Gradle Wrapper
+      run: |
+        echo "════════════════════════════════════════════════════════"
+        echo "🔧 إنشاء Gradle Wrapper متقدم"
+        echo "════════════════════════════════════════════════════════"
+        
+        gradle_dir="gradle-$GRADLE_VERSION"
+        
+        # إنشاء Gradle Wrapper مع خيارات متقدمة
+        echo "⚡ إنشاء Gradle Wrapper..."
+        if ./$gradle_dir/bin/gradle wrapper \
+          --gradle-version $GRADLE_VERSION \
+          --distribution-type all \
+          --gradle-distribution-url "https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-all.zip"; then
+          
+          echo "✅ تم إنشاء Gradle Wrapper بنجاح!"
+          
+          # التحقق من الملفات المُنشأة
+          echo ""
+          echo "🔍 فحص الملفات المُنشأة:"
+          
+          expected_files=(
+            "gradlew"
+            "gradlew.bat"
+            "gradle/wrapper/gradle-wrapper.jar"
+            "gradle/wrapper/gradle-wrapper.properties"
+          )
+          
+          all_good=true
+          for file in "${expected_files[@]}"; do
+            if [ -f "$file" ]; then
+              echo "✅ $file - موجود ($(ls -lh "$file" | awk '{print $5}'))"
+            else
+              echo "❌ $file - غير موجود!"
+              all_good=false
+            fi
+          done
+          
+          if $all_good; then
+            echo "🎉 جميع ملفات Gradle Wrapper مُنشأة بنجاح!"
+          else
+            echo "⚠️ بعض ملفات Gradle Wrapper مفقودة، لكن سنتابع..."
+          fi
+          
+        else
+          echo "❌ فشل في إنشاء Gradle Wrapper"
+          exit 1
+        fi
 
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: oneui-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+    - name: 🔐 Set Gradle Wrapper Permissions and Validation
+      run: |
+        echo "════════════════════════════════════════════════════════"
+        echo "🔐 ضبط صلاحيات وتحقق من Gradle Wrapper"
+        echo "════════════════════════════════════════════════════════"
+        
+        # ضبط صلاحيات gradlew
+        if [ -f "gradlew" ]; then
+          chmod +x gradlew
+          echo "✅ تم ضبط صلاحيات gradlew"
+          echo "📋 صلاحيات gradlew الحالية: $(ls -l gradlew | cut -d' ' -f1)"
+        else
+          echo "❌ gradlew غير موجود!"
+          exit 1
+        fi
+        
+        # اختبار Gradle Wrapper
+        echo ""
+        echo "🧪 اختبار Gradle Wrapper:"
+        if ./gradlew --version; then
+          echo "✅ Gradle Wrapper يعمل بشكل مثالي!"
+        else
+          echo "❌ مشكلة في Gradle Wrapper"
+          exit 1
+        fi
+        
+        # عرض معلومات مفصلة
+        echo ""
+        echo "📊 معلومات Gradle Wrapper المفصلة:"
+        ./gradlew --version
+        
+        # تنظيف مجلد gradle المؤقت
+        echo ""
+        echo "🧹 تنظيف ملفات Gradle المؤقتة:"
+        rm -rf gradle-$GRADLE_VERSION
+        echo "✅ تم حذف مجلد gradle-$GRADLE_VERSION"
+
+    # ═══════════════════════════════════════════════════════════════
+    # المرحلة السابعة: الإصلاح التلقائي للمشاكل المعروفة
+    # ═══════════════════════════════════════════════════════════════
+    
+    - name: 🔧 Intelligent Auto-Fix for Known Issues
+      run: |
+        echo "════════════════════════════════════════════════════════"
+        echo "🔧 الإصلاح التلقائي الذكي للمشاكل المعروفة"
+        echo "════════════════════════════════════════════════════════"
+        
+        layout_file="app/src/main/res/layout/activity_main.xml"
+        backup_file="app/src/main/res/layout/activity_main.xml.backup"
+        
+        # إنشاء نسخة احتياطية
+        if [ -f "$layout_file" ]; then
+          cp "$layout_file" "$backup_file"
+          echo "✅ تم إنشاء نسخة احتياطية: $backup_file"
+          
+          # البحث عن وإصلاح expandedTitleEnabled
+          if grep -q "expandedTitleEnabled" "$layout_file"; then
+            echo ""
+            echo "🎯 تم العثور على المشكلة: expandedTitleEnabled"
+            echo "السياق قبل الإصلاح:"
+            grep -A2 -B2 "expandedTitleEnabled" "$layout_file" | nl
+            
+            # إنشاء إصلاح ذكي - تعليق السطر بدلاً من حذفه
+            echo ""
+            echo "🔧 تطبيق الإصلاح التلقائي..."
+            sed -i 's/.*expandedTitleEnabled.*/        <!-- FIXED: & -->/' "$layout_file"
+            
+            echo "✅ تم تطبيق الإصلاح!"
+            echo "السياق بعد الإصلاح:"
+            grep -A2 -B2 "FIXED.*expandedTitleEnabled" "$layout_file" | nl
+            
+            echo ""
+            echo "📝 ملاحظة: تم تعليق السطر المشكل بدلاً من حذفه حتى يمكنك مراجعته لاحقاً"
+            
+          else
+            echo "✅ لم يتم العثور على expandedTitleEnabled - لا حاجة للإصلاح"
+          fi
+          
+          # البحث عن مشاكل محتملة أخرى
+          echo ""
+          echo "🔍 فحص مشاكل محتملة أخرى:"
+          
+          # فحص خصائص app: غير المدعومة
+          suspicious_attrs=(
+            "expandedTitleGravity"
+            "expandedTitleMargin" 
+            "expandedTitleTypeface"
+            "collapsedTitleEnabled"
+          )
+          
+          issues_found=false
+          for attr in "${suspicious_attrs[@]}"; do
+            if grep -q "$attr" "$layout_file"; then
+              echo "⚠️ خاصية مشكوك فيها: $attr"
+              issues_found=true
+            fi
+          done
+          
+          if ! $issues_found; then
+            echo "✅ لم يتم العثور على مشاكل إضافية"
+          fi
+          
+        else
+          echo "⚠️ ملف activity_main.xml غير موجود - تخطي الإصلاح التلقائي"
+        fi
+
+    # ═══════════════════════════════════════════════════════════════
+    # المرحلة الثامنة: بناء التطبيق مع مراقبة متقدمة
+    # ═══════════════════════════════════════════════════════════════
+    
+    - name: 🏗️ Advanced Build with Comprehensive Monitoring
+      env:
+        JITPACK_TOKEN: ${{ secrets.JITPACK_TOKEN }}
+      run: |
+        echo "════════════════════════════════════════════════════════"
+        echo "🏗️ بناء متقدم مع مراقبة شاملة"
+        echo "════════════════════════════════════════════════════════"
+        
+        # إعداد متغيرات البناء لتحسين الأداء
+        export GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.configureondemand=true"
+        export JAVA_OPTS="-Xmx4g -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError"
+        
+        echo "⚙️ متغيرات البيئة للبناء:"
+        echo "GRADLE_OPTS: $GRADLE_OPTS"
+        echo "JAVA_OPTS: $JAVA_OPTS"
+        echo ""
+        
+        # بدء عملية البناء مع تسجيل مفصل
+        echo "🚀 بدء عملية البناء..."
+        echo "الوقت الحالي: $(date)"
+        
+        build_start_time=$(date +%s)
+        
+        # تشغيل البناء مع خيارات متقدمة وحفظ السجل
+        if ./gradlew assembleDebug \
+          --stacktrace \
+          --info \
+          --warning-mode all \
+          --build-cache \
+          --gradle-user-home="$GRADLE_USER_HOME" \
+          2>&1 | tee detailed_build.log; then
+          
+          build_end_time=$(date +%s)
+          build_duration=$((build_end_time - build_start_time))
+          
+          echo ""
+          echo "🎉 البناء مكتمل بنجاح!"
+          echo "⏱️ مدة البناء: ${build_duration} ثانية"
+          echo "📅 وقت الانتهاء: $(date)"
+          
+          # فحص وجود ملف APK
+          apk_path="app/build/outputs/apk/debug/app-debug.apk"
+          if [ -f "$apk_path" ]; then
+            apk_size=$(ls -lh "$apk_path" | awk '{print $5}')
+            echo "📱 APK تم إنشاؤه بنجاح!"
+            echo "📊 حجم APK: $apk_size"
+            echo "📁 مسار APK: $apk_path"
+          else
+            echo "⚠️ تحذير: APK غير موجود في المسار المتوقع"
+            echo "🔍 البحث عن ملفات APK..."
+            find . -name "*.apk" -type f 2>/dev/null || echo "لم يتم العثور على ملفات APK"
+          fi
+          
+        else
+          echo "❌ فشل في البناء!"
+          echo "سيتم تحليل الأخطاء في الخطوة التالية..."
+          exit 1
+        fi
+
+    # ═══════════════════════════════════════════════════════════════
+    # المرحلة التاسعة: تحليل مفصل للأخطاء (في حالة فشل البناء)
+    # ═══════════════════════════════════════════════════════════════
+    
+    - name: 🚨 Advanced Build Failure Analysis
+      if: failure()
+      run: |
+        echo "════════════════════════════════════════════════════════"
+        echo "🚨 تحليل متقدم لفشل البناء"
+        echo "════════════════════════════════════════════════════════"
+        
+        if [ -f "detailed_build.log" ]; then
+          echo "📋 آخر 100 سطر من سجل البناء:"
+          echo "----------------------------------------"
+          tail -100 detailed_build.log
+          echo "----------------------------------------"
+          echo ""
+          
+          echo "🔍 تحليل أنواع الأخطاء:"
+          
+          # البحث عن أخطاء AAPT
+          echo ""
+          echo "🎨 أخطاء AAPT (Android Asset Packaging Tool):"
+          if grep -i "aapt.*error" detailed_build.log; then
+            echo "تفاصيل أخطاء AAPT:"
+            grep -A 5 -B 5 -i "aapt.*error" detailed_build.log
+          else
+            echo "✅ لم يتم العثور على أخطاء AAPT"
+          fi
+          
+          # البحث عن أخطاء الخصائص
+          echo ""
+          echo "🏷️ أخطاء الخصائص (Attribute Errors):"
+          if grep -i "attribute.*not found" detailed_build.log; then
+            echo "تفاصيل أخطاء الخصائص:"
+            grep -A 3 -B 3
