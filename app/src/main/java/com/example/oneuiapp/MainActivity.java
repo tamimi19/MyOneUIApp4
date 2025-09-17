@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
         // تعيين أيقونة OneUI مخصصة للـ Navigation Drawer
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_oui_list);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_oui_drawer);
 
         // تهيئة قائمة الـ Drawer
         initFragments();
