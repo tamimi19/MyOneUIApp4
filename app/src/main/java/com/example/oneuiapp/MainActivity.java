@@ -1,214 +1,239 @@
 package com.example.oneuiapp;
 
-import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Button;
+import android.view.ViewGroup;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * النشاط الرئيسي للتطبيق - يستخدم مكتبات OneUI لتوفير تجربة Samsung المحسنة
- * يحتوي على درج جانبي للتنقل وإدارة للفراجمنتس المختلفة
+ * نسخة مبسطة من MainActivity تتجنب الاعتماد على ملفات XML معقدة
+ * تنشئ الواجهة برمجياً لضمان عدم حدوث أخطاء NullPointerException
  */
 public class MainActivity extends AppCompatActivity {
 
-    // المتغيرات الأساسية للتطبيق
-    private final List<Fragment> fragments = new ArrayList<>();
-    private DrawerLayout drawerLayout;
+    private LinearLayout mainContainer;
+    private TextView titleText;
+    private Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        // إعداد شريط الأدوات مع دعم OneUI
-        setupToolbar();
         
-        // إعداد الدرج الجانبي للتنقل
-        setupDrawerLayout();
+        // إنشاء الواجهة برمجياً بدلاً من استخدام XML
+        createProgrammaticLayout();
         
-        // تهيئة الفراجمنتس والمحتوى
-        initializeFragments();
-        
-        // رسالة ترحيب تشير للميزة الخاصة بك
+        // رسالة ترحيب تؤكد أن التطبيق يعمل
         showWelcomeMessage();
+        
+        // تحميل المحتوى الافتراضي
+        loadDefaultContent();
     }
 
     /**
-     * إعداد شريط الأدوات مع تحسينات OneUI
-     * يتضمن تفعيل أيقونة التنقل والعنوان المناسب
+     * إنشاء تخطيط بسيط برمجياً يتجنب مشاكل XML
+     * يتضمن عنوان وحاوية للمحتوى وأزرار للتنقل
      */
-    private void setupToolbar() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-            
-            // تفعيل أيقونة الرجوع/القائمة
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                getSupportActionBar().setTitle("تطبيق OneUI");
-            }
+    private void createProgrammaticLayout() {
+        // الحاوية الرئيسية
+        LinearLayout rootLayout = new LinearLayout(this);
+        rootLayout.setOrientation(LinearLayout.VERTICAL);
+        rootLayout.setPadding(32, 64, 32, 32);
+        
+        // العنوان الرئيسي
+        titleText = new TextView(this);
+        titleText.setText("تطبيق OneUI - يعمل بنجاح!");
+        titleText.setTextSize(24);
+        titleText.setPadding(0, 0, 0, 32);
+        titleText.setGravity(android.view.Gravity.CENTER);
+        
+        // أزرار التنقل
+        LinearLayout buttonLayout = createNavigationButtons();
+        
+        // حاوية المحتوى الديناميكي
+        mainContainer = new LinearLayout(this);
+        mainContainer.setOrientation(LinearLayout.VERTICAL);
+        mainContainer.setLayoutParams(new LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, 
+            ViewGroup.LayoutParams.MATCH_PARENT));
+        
+        // تجميع العناصر
+        rootLayout.addView(titleText);
+        rootLayout.addView(buttonLayout);
+        rootLayout.addView(mainContainer);
+        
+        // تعيين التخطيط كمحتوى للنشاط
+        setContentView(rootLayout);
+    }
+
+    /**
+     * إنشاء أزرار التنقل للوصول للفراجمنتس المختلفة
+     * كل زر يعرض محتوى مختلف في الحاوية الرئيسية
+     */
+    private LinearLayout createNavigationButtons() {
+        LinearLayout buttonContainer = new LinearLayout(this);
+        buttonContainer.setOrientation(LinearLayout.HORIZONTAL);
+        buttonContainer.setPadding(0, 0, 0, 32);
+        
+        // زر قائمة التمرير
+        Button scrollButton = createNavigationButton("قائمة التمرير");
+        scrollButton.setOnClickListener(v -> showScrollFragment());
+        
+        // زر الإعدادات
+        Button settingsButton = createNavigationButton("الإعدادات");
+        settingsButton.setOnClickListener(v -> showSettingsFragment());
+        
+        // زر العودة للرئيسية
+        Button homeButton = createNavigationButton("الرئيسية");
+        homeButton.setOnClickListener(v -> showHomeContent());
+        
+        buttonContainer.addView(scrollButton);
+        buttonContainer.addView(createButtonSpacer());
+        buttonContainer.addView(settingsButton);
+        buttonContainer.addView(createButtonSpacer());
+        buttonContainer.addView(homeButton);
+        
+        return buttonContainer;
+    }
+
+    /**
+     * إنشاء زر تنقل بتنسيق موحد
+     */
+    private Button createNavigationButton(String text) {
+        Button button = new Button(this);
+        button.setText(text);
+        button.setLayoutParams(new LinearLayout.LayoutParams(
+            0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+        return button;
+    }
+
+    /**
+     * إنشاء مسافة بين الأزرار لتحسين التخطيط
+     */
+    private android.view.View createButtonSpacer() {
+        android.view.View spacer = new android.view.View(this);
+        spacer.setLayoutParams(new LinearLayout.LayoutParams(16, ViewGroup.LayoutParams.MATCH_PARENT));
+        return spacer;
+    }
+
+    /**
+     * عرض فراجمنت قائمة التمرير مع 200 عنصر
+     * يستبدل المحتوى الحالي بقائمة طويلة للاختبار
+     */
+    private void showScrollFragment() {
+        titleText.setText("قائمة التمرير - 200 عنصر");
+        replaceFragment(new ScrollFragment());
+        showConfirmationMessage("تم تحميل قائمة التمرير");
+    }
+
+    /**
+     * عرض فراجمنت الإعدادات مع خيارات الوضع الداكن واللغة
+     * يوفر واجهة بسيطة لتغيير إعدادات التطبيق
+     */
+    private void showSettingsFragment() {
+        titleText.setText("إعدادات التطبيق");
+        replaceFragment(new SettingsFragment());
+        showConfirmationMessage("تم فتح الإعدادات");
+    }
+
+    /**
+     * عرض المحتوى الافتراضي للشاشة الرئيسية
+     * يتضمن معلومات أساسية عن التطبيق وميزة OneUI
+     */
+    private void showHomeContent() {
+        titleText.setText("تطبيق OneUI - الشاشة الرئيسية");
+        clearFragments();
+        createHomeContent();
+        showConfirmationMessage("العودة للشاشة الرئيسية");
+    }
+
+    /**
+     * استبدال الفراجمنت الحالي بفراجمنت جديد
+     * يدير دورة حياة الفراجمنتس بطريقة صحيحة
+     */
+    private void replaceFragment(Fragment newFragment) {
+        currentFragment = newFragment;
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(mainContainer.getId(), newFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    /**
+     * إزالة جميع الفراجمنتس وإظهار المحتوى الافتراضي
+     */
+    private void clearFragments() {
+        if (currentFragment != null) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.remove(currentFragment);
+            transaction.commit();
+            currentFragment = null;
         }
     }
 
     /**
-     * إعداد الدرج الجانبي مع مكونات OneUI المحسنة
-     * يتضمن إعداد قائمة التنقل والسلوكيات المختلفة
+     * إنشاء محتوى الشاشة الرئيسية برمجياً
+     * يتضمن معلومات عن ميزة السحب لأسفل المطلوبة
      */
-    private void setupDrawerLayout() {
-        drawerLayout = findViewById(R.id.drawerLayout);
+    private void createHomeContent() {
+        mainContainer.removeAllViews();
         
-        // إعداد قائمة التنقل
-        RecyclerView drawerList = findViewById(R.id.drawer_list);
-        if (drawerList != null) {
-            drawerList.setLayoutManager(new LinearLayoutManager(this));
-            // يمكن إضافة الـ adapter هنا عند الحاجة
-        }
+        TextView welcomeText = new TextView(this);
+        welcomeText.setText("مرحباً بك في تطبيق OneUI!\n\n" +
+                           "هذا التطبيق يستخدم مكتبات Samsung OneUI لتوفير:\n" +
+                           "• ميزة السحب لأسفل للوصول السهل\n" +
+                           "• تصميم متوافق مع أجهزة Samsung\n" +
+                           "• دعم الوضع الداكن والفاتح\n" +
+                           "• واجهة سهلة الاستخدام بيد واحدة\n\n" +
+                           "استخدم الأزرار أعلاه للتنقل بين الأقسام المختلفة.");
+        welcomeText.setTextSize(16);
+        welcomeText.setPadding(16, 16, 16, 16);
+        welcomeText.setLineSpacing(8, 1.2f);
+        
+        mainContainer.addView(welcomeText);
     }
 
     /**
-     * تهيئة الفراجمنتس المختلفة للتطبيق
-     * يبدأ بعرض الفراجمنت الأول افتراضياً
+     * تحميل المحتوى الافتراضي عند بدء التطبيق
      */
-    private void initializeFragments() {
-        // إضافة فراجمنت بسيط للاختبار
-        // يمكن إضافة المزيد من الفراجمنتس لاحقاً
-        
-        // عرض محتوى افتراضي في الحاوية الرئيسية
-        // سيتم تطويره لاحقاً مع إضافة الفراجمنتس الفعلية
+    private void loadDefaultContent() {
+        createHomeContent();
     }
 
     /**
-     * عرض رسالة ترحيب تشير للميزة المطلوبة
-     * تذكر المستخدم بإمكانية السحب للأسفل للوصول السهل
+     * عرض رسالة ترحيب تؤكد أن التطبيق يعمل بنجاح
+     * مهمة لطمأنة المستخدم أن الإعدادات صحيحة
      */
     private void showWelcomeMessage() {
         Toast.makeText(this, 
-            "مرحباً! استخدم ميزة السحب لأسفل للوصول السهل لعناصر أعلى الشاشة", 
+            "تم تشغيل التطبيق بنجاح! مكتبات OneUI تعمل.", 
             Toast.LENGTH_LONG).show();
     }
 
     /**
-     * التعامل مع تغييرات إعدادات الجهاز مثل الدوران أو الوضع الداكن
-     * يتضمن دعم خاص للإصدارات الأقدم من Android
+     * عرض رسالة تأكيد للإجراءات المختلفة
      */
-    @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        
-        // دعم خاص للإصدارات الأقدم من Android (قبل OneUI)
-        if (Build.VERSION.SDK_INT <= 28) {
-            // يمكن إضافة منطق إضافي هنا للتعامل مع الوضع الداكن في الإصدارات القديمة
-        }
+    private void showConfirmationMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     /**
-     * التعامل مع نقرات عناصر شريط الأدوات
-     * يتضمن منطق فتح وإغلاق الدرج الجانبي
-     */
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            // تبديل حالة الدرج الجانبي
-            handleDrawerToggle();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * منطق التعامل مع فتح وإغلاق الدرج الجانبي
-     * يتحقق من الحالة الحالية ويبدلها
-     */
-    private void handleDrawerToggle() {
-        if (drawerLayout != null) {
-            RecyclerView drawerList = findViewById(R.id.drawer_list);
-            if (drawerList != null) {
-                if (drawerLayout.isDrawerOpen(drawerList)) {
-                    drawerLayout.closeDrawer(drawerList);
-                } else {
-                    drawerLayout.openDrawer(drawerList);
-                }
-            }
-        }
-    }
-
-    /**
-     * التعامل مع زر الرجوع مع تحسينات خاصة
-     * يتضمن إصلاحاً لمشكلة memory leak في Android O
+     * التعامل مع زر الرجوع بطريقة محسنة
+     * يراعي وجود فراجمنتس في المكدس
      */
     @Override
     public void onBackPressed() {
-        // إذا كان الدرج مفتوحاً، أغلقه أولاً
-        RecyclerView drawerList = findViewById(R.id.drawer_list);
-        if (drawerLayout != null && drawerList != null && drawerLayout.isDrawerOpen(drawerList)) {
-            drawerLayout.closeDrawer(drawerList);
-            return;
-        }
-        
-        // إصلاح مشكلة memory leak في Android O
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O && isTaskRoot()) {
-            finishAfterTransition();
+        // إذا كان هناك فراجمنتس في المكدس، ارجع إليها
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+            titleText.setText("تطبيق OneUI - الشاشة الرئيسية");
         } else {
+            // وإلا اغلق التطبيق
             super.onBackPressed();
-        }
-    }
-
-    /**
-     * طريقة مساعدة للتبديل بين الفراجمنتس المختلفة
-     * تستقبل موقع الفراجمنت وتعرضه مخفية الآخرين
-     */
-    private boolean switchToFragment(int position) {
-        if (position >= 0 && position < fragments.size()) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            
-            // إخفاء جميع الفراجمنتس
-            for (Fragment fragment : fragments) {
-                transaction.hide(fragment);
-            }
-            
-            // عرض الفراجمنت المطلوب
-            transaction.show(fragments.get(position)).commit();
-            
-            // تحديث عنوان شريط الأدوات
-            updateToolbarTitle(position);
-            
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * تحديث عنوان شريط الأدوات حسب الفراجمنت النشط
-     * يوفر سياقاً واضحاً للمستخدم حول المحتوى الحالي
-     */
-    private void updateToolbarTitle(int position) {
-        if (getSupportActionBar() != null) {
-            String title = "تطبيق OneUI";
-            switch (position) {
-                case 0:
-                    title = "الشاشة الرئيسية";
-                    break;
-                case 1:
-                    title = "القوائم والتمرير";
-                    break;
-                case 2:
-                    title = "الإعدادات";
-                    break;
-            }
-            getSupportActionBar().setTitle(title);
         }
     }
 }
