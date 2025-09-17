@@ -18,31 +18,33 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    // إضافة هذا الجزء ضروري لتجميع ملفات جافا مع النسخة 8
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
-// استبعاد مكتبات AndroidX الافتراضية عند استخدام مكتبات OneUI
+// إزالة مكتبات Google الأصلية (مطلوب حسب التوثيق)
 configurations.all {
     exclude group: 'androidx.appcompat', module: 'appcompat'
     exclude group: 'androidx.core', module: 'core'
+    exclude group: 'com.google.android.material', module: 'material'
 }
 
 dependencies {
-    // تم إضافة المكتبة الأساسية المفقودة
-    implementation 'io.github.oneuiproject.sesl:core:1.2.0'
-
-    // اعتماد مكتبات OneUI Core و OneUI Design
+    // OneUI Core Libraries (الأساسية)
     implementation 'io.github.oneuiproject.sesl:appcompat:1.4.0'
     implementation 'io.github.oneuiproject.sesl:material:1.5.0'
     implementation 'io.github.oneuiproject.sesl:coordinatorlayout:1.0.0'
     implementation 'io.github.oneuiproject.sesl:drawerlayout:1.0.0'
     implementation 'io.github.oneuiproject.sesl:recyclerview:1.4.1'
     implementation 'io.github.oneuiproject.sesl:preference:1.1.0'
+    
+    // OneUI Design Library (للثيمات والمكونات)
+    implementation 'io.github.oneuiproject:design:1.2.6'
+    
+    // Picker Libraries (اختياري)
     implementation 'io.github.oneuiproject.sesl:picker-basic:1.2.0'
     implementation 'io.github.oneuiproject.sesl:picker-color:1.1.0'
-    implementation 'io.github.oneuiproject:design:1.2.6'
 }
