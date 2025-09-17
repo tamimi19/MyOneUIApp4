@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
         // تعيين أيقونة OneUI مخصصة للـ Navigation Drawer
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_oui_menu_outline);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_oui_list);
 
         // تهيئة قائمة الـ Drawer
         initFragments();
@@ -90,8 +90,8 @@ public class MainActivity extends AppCompatActivity {
         
         // إعداد بيانات قائمة التنقل مع أيقونات OneUI الصحيحة
         List<DrawerItem> items = new ArrayList<>();
-        items.add(new DrawerItem("الدرج الجانبي", R.drawable.ic_oui_menu_outline));
-        items.add(new DrawerItem("شاشة التمرير", R.drawable.ic_oui_list_outline)); 
+        items.add(new DrawerItem("الدرج الجانبي", R.drawable.ic_oui_drawer));
+        items.add(new DrawerItem("شاشة التمرير", R.drawable.ic_oui_list)); 
         items.add(new DrawerItem("الإعدادات", R.drawable.ic_oui_settings_outline));
         
         drawerAdapter = new DrawerListAdapter(items, position -> onDrawerItemSelected(position));
