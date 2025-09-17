@@ -22,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
-                app:expandedTitle="false"
+                app:expandedTitleEnabled="false"
                 app:collapsedTitleGravity="start">
 
                 <dev.oneuiproject.oneui.widget.Toolbar
@@ -41,7 +41,7 @@
             android:id="@+id/main_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <!-- لوح التنقل الجانبي -->
