@@ -13,19 +13,21 @@
         android:layout_height="match_parent"
         app:layout_location="main_content">
 
-        <!-- شريط الأدوات (Toolbar) مع ميزة CollapsingToolbarLayout لتأثير السحب -->
+        <!-- شريط الأدوات مع استخدام SESL AppBarLayout الذي يدعم ميزة Pull-to-Reach -->
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <dev.oneuiproject.oneui.layout.CollapsingToolbarLayout
+            <!-- استخدام CollapsingToolbarLayout من SESL مع الخاصية الصحيحة -->
+            <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
-                app:expandedTitleEnabled="false"
+                app:extendedTitleEnabled="false"
                 app:collapsedTitleGravity="start">
 
-                <dev.oneuiproject.oneui.widget.Toolbar
+                <!-- استخدام Toolbar من SESL لضمان التوافق التام -->
+                <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
@@ -33,7 +35,7 @@
                     app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
                     app:layout_collapseMode="pin" />
 
-            </dev.oneuiproject.oneui.layout.CollapsingToolbarLayout>
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
 
         <!-- حاوية لعرض الـ Fragments أو محتوى الشاشة -->
