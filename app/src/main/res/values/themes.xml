@@ -1,26 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- OneUI Theme الأساسي -->
-    <style name="OneUITheme" parent="Theme.OneUI.DayNight.NoActionBar">
-        <!-- الألوان الأساسية -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorControlActivated">@color/colorControlActivated</item>
-        
-        <!-- ألوان النص والخلفية -->
-        <item name="android:textColorPrimary">?android:attr/textColorPrimary</item>
-        <item name="android:textColorSecondary">?android:attr/textColorSecondary</item>
-        
-        <!-- شريط الحالة -->
-        <item name="android:statusBarColor">?attr/colorPrimaryDark</item>
-        <item name="android:windowLightStatusBar">false</item>
-        
-        <!-- تفعيل انتقالات النوافذ -->
-        <item name="android:windowContentTransitions">true</item>
-    </style>
-
-    <!-- ثيم إضافي للمواد (اختياري) -->
-    <style name="AppTheme" parent="OneUITheme">
-        <!-- يمكن إضافة تخصيصات إضافية هنا -->
-    </style>
+    <!-- استخدام الثيم الرسمي من مكتبة OneUI Design -->
+    <!-- لا حاجة لتعريف ثيم مخصص - الثيم موجود في المكتبة -->
 </resources>
