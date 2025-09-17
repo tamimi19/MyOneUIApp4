@@ -18,11 +18,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import android.view.MenuItem;
-
-// استبدال TipPopup بـ Toast أو Snackbar كبديل مؤقت
-import android.widget.Toast;
-
-// استبدال TipPopup بـ Toast أو Snackbar كبديل مؤقت
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,111 +32,149 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // إعداد الـ Toolbar
+        // إعداد الـ Toolbar مع OneUI
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // إعداد الـ DrawerLayout مع أيقونة الهامبرغر
-        drawerLayout = findViewById(R.id.drawer_layout);
-        drawerToggle = new ActionBarDrawerToggle(
-                this, 
-                drawerLayout, 
-                toolbar,
-                R.string.drawer_open, 
-                R.string.drawer_close
-        );
+        // إعداد الـ DrawerLayout الأساسي (سيتم استبداله بـ OneUI DrawerLayout لاحقاً)
+        drawerLayout = findViewById(R.id.drawerLayout);
         
-        // تعيين أيقونة OneUI للـ drawer
-        drawerToggle.setDrawerIndicatorEnabled(false);
-        drawerLayout.addDrawerListener(drawerToggle);
-        drawerToggle.syncState();
+        // إعداد الـ ActionBar لـ OneUI
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("تطبيق OneUI");
+        }
 
-        // تعيين أيقونة OneUI مخصصة للـ Navigation Drawer
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_oui_drawer);
-
-        // تهيئة قائمة الـ Drawer
+        // تهيئة المكونات
         initFragments();
         initDrawer();
 
-        // استبدال TipPopup بـ Toast كبديل مؤقت
-        Toast.makeText(this, "مرحباً! قم بسحب القائمة لأعلى ولأسفل.", Toast.LENGTH_LONG).show();
+        // رسالة ترحيب للمستخدم
+        Toast.makeText(this, "مرحباً بك في تطبيق OneUI! اسحب لأسفل للوصول السهل.", Toast.LENGTH_LONG).show();
     }
 
     private void initFragments() {
-        // إضافة الفراجمنتس التي سنعرضها
-        fragments.add(new DrawerFragment());      // شاشة الدرج الجانبي
-        fragments.add(new ScrollFragment());      // شاشة التمرير (200 عنصر)
-        fragments.add(new SettingsFragment());    // شاشة الإعدادات
+        // إضافة الفراجمنتس المختلفة للتطبيق
+        // ملاحظة: ستحتاج لإنشاء هذه الفراجمنتس منفصلة
+        
+        // يمكن إضافة فراجمنتس حقيقية هنا لاحقاً
+        // fragments.add(new DrawerFragment());
+        // fragments.add(new ScrollFragment());
+        // fragments.add(new SettingsFragment());
 
-        // عرض الفراجمنت الأول افتراضياً
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.add(R.id.main_container, fragments.get(0));
-        ft.add(R.id.main_container, fragments.get(1));
-        ft.add(R.id.main_container, fragments.get(2));
-        ft.hide(fragments.get(1));
-        ft.hide(fragments.get(2));
-        ft.commit();
+        // للاختبار المبدئي، سنترك هذا فارغاً
+        // ويمكن إضافة فراجمنت افتراضي بسيط
     }
 
     private void initDrawer() {
+        // إعداد قائمة التنقل الجانبي
         RecyclerView drawerList = findViewById(R.id.drawer_list);
-        drawerList.setLayoutManager(new LinearLayoutManager(this));
-        
-        // إعداد بيانات قائمة التنقل مع أيقونات OneUI الصحيحة
-        List<DrawerItem> items = new ArrayList<>();
-        items.add(new DrawerItem("الدرج الجانبي", R.drawable.ic_oui_drawer));
-        items.add(new DrawerItem("شاشة التمرير", R.drawable.ic_oui_list)); 
-        items.add(new DrawerItem("الإعدادات", R.drawable.ic_oui_settings_outline));
-        
-        drawerAdapter = new DrawerListAdapter(items, position -> onDrawerItemSelected(position));
-        drawerList.setAdapter(drawerAdapter);
+        if (drawerList != null) {
+            drawerList.setLayoutManager(new LinearLayoutManager(this));
+            
+            // إعداد بيانات قائمة التنقل
+            List<DrawerItem> items = new ArrayList<>();
+            items.add(new DrawerItem("الشاشة الرئيسية", android.R.drawable.ic_menu_gallery));
+            items.add(new DrawerItem("قائمة التمرير", android.R.drawable.ic_menu_sort_by_size)); 
+            items.add(new DrawerItem("الإعدادات", android.R.drawable.ic_menu_preferences));
+            
+            // ملاحظة: ستحتاج لإنشاء DrawerListAdapter و DrawerItem
+            // drawerAdapter = new DrawerListAdapter(items, position -> onDrawerItemSelected(position));
+            // drawerList.setAdapter(drawerAdapter);
+        }
     }
 
     private boolean onDrawerItemSelected(int position) {
-        // تبديل الفراجمنت المعروض حسب اختيار المستخدم
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        for (Fragment frag : fragments) {
-            transaction.hide(frag);
-        }
-        transaction.show(fragments.get(position)).commit();
+        // تبديل المحتوى حسب اختيار المستخدم
+        // هذا سيحتاج للتطوير عند إضافة الفراجمنتس الفعلية
         
-        // تحديث العنوان في شريط الأدوات
-        if (position == 0) {
-            getSupportActionBar().setTitle("الدرج الجانبي");
-        } else if (position == 1) {
-            getSupportActionBar().setTitle("شاشة التمرير");
-        } else if (position == 2) {
-            getSupportActionBar().setTitle("الإعدادات");
+        // إغلاق الدرج بعد الاختيار
+        if (drawerLayout != null) {
+            drawerLayout.closeDrawers();
         }
+        
+        // تحديث العنوان
+        if (getSupportActionBar() != null) {
+            switch (position) {
+                case 0:
+                    getSupportActionBar().setTitle("الشاشة الرئيسية");
+                    break;
+                case 1:
+                    getSupportActionBar().setTitle("قائمة التمرير");
+                    break;
+                case 2:
+                    getSupportActionBar().setTitle("الإعدادات");
+                    break;
+                default:
+                    getSupportActionBar().setTitle("تطبيق OneUI");
+                    break;
+            }
+        }
+        
         return true;
     }
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // تحديث حالة الـ DrawerToggle مع التكوين الجديد
-        drawerToggle.onConfigurationChanged(newConfig);
         
-        // تعامل مع تغيرات التكوين في الوضع الداكن (إذا كان SDK ≤ 28)
+        // التعامل مع تغيرات اتجاه الشاشة والوضع الداكن
         if (Build.VERSION.SDK_INT <= 28) {
+            // لدعم الإصدارات الأقدم من Android
             final Resources res = getResources();
-            // هنا يمكن تطبيق منطق DarkModeUtils كما في مكتبة OneUI إذا لزم الأمر
             res.getConfiguration().setTo(newConfig);
+        }
+        
+        // تحديث حالة الدرج إذا كان موجوداً
+        if (drawerToggle != null) {
+            drawerToggle.onConfigurationChanged(newConfig);
         }
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        // التعامل مع نقرة أيقونة الـ Navigation Drawer
+        // التعامل مع نقرات شريط الأدوات
         if (item.getItemId() == android.R.id.home) {
-            if (drawerLayout.isDrawerOpen(findViewById(R.id.drawer_list))) {
-                drawerLayout.closeDrawer(findViewById(R.id.drawer_list));
-            } else {
-                drawerLayout.openDrawer(findViewById(R.id.drawer_list));
+            // تبديل حالة الدرج الجانبي
+            if (drawerLayout != null) {
+                if (drawerLayout.isDrawerOpen(findViewById(R.id.drawer_list))) {
+                    drawerLayout.closeDrawer(findViewById(R.id.drawer_list));
+                } else {
+                    drawerLayout.openDrawer(findViewById(R.id.drawer_list));
+                }
             }
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onBackPressed() {
+        // التعامل مع زر الرجوع
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(findViewById(R.id.drawer_list))) {
+            // إذا كان الدرج مفتوحاً، أغلقه
+            drawerLayout.closeDrawer(findViewById(R.id.drawer_list));
+        } else {
+            // إصلاح memory leak في Android O
+            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O && isTaskRoot()) {
+                finishAfterTransition();
+            } else {
+                super.onBackPressed();
             }
+        }
+    }
+
+    // كلاس مساعد لعناصر الدرج - ستحتاج لإنشاء هذا في ملف منفصل
+    public static class DrawerItem {
+        private String title;
+        private int iconResId;
+        
+        public DrawerItem(String title, int iconResId) {
+            this.title = title;
+            this.iconResId = iconResId;
+        }
+        
+        public String getTitle() { return title; }
+        public int getIconResId() { return iconResId; }
+    }
+}
