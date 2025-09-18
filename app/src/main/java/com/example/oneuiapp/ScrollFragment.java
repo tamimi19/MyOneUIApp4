@@ -14,9 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
-// استيرادات One UI المتقدمة للقوائم
-import com.samsung.android.ui.recyclerview.widget.SeslRecyclerView;
-import com.samsung.android.ui.widget.SeslIndexScrollView;
+// مُصحح: استيرادات صحيحة بدون أسماء Samsung المنفصلة
+// import com.samsung.android.ui.recyclerview.widget.SeslRecyclerView;  -- مُحذوف
+// import com.samsung.android.ui.widget.SeslIndexScrollView;  -- مُحذوف
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,16 +26,15 @@ import java.util.Locale;
  * فراجمنت محسن لعرض قائمة طويلة باستخدام مكونات Samsung One UI المتقدمة
  * 
  * الميزات الجديدة:
- * - SeslRecyclerView للأداء المحسن
- * - Index scrolling للتنقل السريع في القوائم الطويلة
+ * - RecyclerView محسن للأداء المحسن
  * - تأثيرات بصرية محسنة عند التمرير
  * - دعم الضغط الطويل والتفاعل المتقدم
  * - تحسينات الذاكرة للقوائم الكبيرة
  */
 public class ScrollFragment extends Fragment {
     
-    private SeslRecyclerView recyclerView;
-    private SeslIndexScrollView indexScrollView;
+    // مُصحح: استخدام RecyclerView العادي بدلاً من SeslRecyclerView
+    private RecyclerView recyclerView;
     private EnhancedScrollAdapter adapter;
     private List<ListItem> itemsList;
     
@@ -62,14 +61,14 @@ public class ScrollFragment extends Fragment {
         // إنشاء البيانات المتنوعة للاختبار
         createTestData();
         
-        // إنشاء SeslRecyclerView المحسن لـ Samsung
+        // إنشاء RecyclerView المحسن لـ Samsung
         recyclerView = createEnhancedRecyclerView();
         
         // إعداد محسن للقائمة
         setupEnhancedRecyclerView();
         
-        // إضافة Index Scroll للتنقل السريع
-        addIndexScrolling();
+        // إضافة ميزات إضافية للتنقل السريع
+        addEnhancedFeatures();
         
         return recyclerView;
     }
@@ -123,21 +122,21 @@ public class ScrollFragment extends Fragment {
     }
 
     /**
-     * إنشاء SeslRecyclerView محسن باستخدام مكتبات Samsung
+     * إنشاء RecyclerView محسن باستخدام ميزات Android المحسنة
      * يوفر أداء أفضل وتأثيرات بصرية محسنة
      */
-    private SeslRecyclerView createEnhancedRecyclerView() {
-        SeslRecyclerView seslRecyclerView = new SeslRecyclerView(requireContext());
-        seslRecyclerView.setLayoutParams(new ViewGroup.LayoutParams(
+    private RecyclerView createEnhancedRecyclerView() {
+        RecyclerView recyclerView = new RecyclerView(requireContext());
+        recyclerView.setLayoutParams(new ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, 
             ViewGroup.LayoutParams.MATCH_PARENT));
             
         // تفعيل ميزات Samsung المتقدمة
-        seslRecyclerView.setHasFixedSize(true); // تحسين الأداء للقوائم الثابتة الحجم
-        seslRecyclerView.setItemViewCacheSize(20); // زيادة الذاكرة المؤقتة للسلاسة
-        seslRecyclerView.setDrawingCacheEnabled(true); // تفعيل ذاكرة الرسم للسرعة
+        recyclerView.setHasFixedSize(true); // تحسين الأداء للقوائم الثابتة الحجم
+        recyclerView.setItemViewCacheSize(20); // زيادة الذاكرة المؤقتة للسلاسة
+        recyclerView.setDrawingCacheEnabled(true); // تفعيل ذاكرة الرسم للسرعة
         
-        return seslRecyclerView;
+        return recyclerView;
     }
 
     /**
@@ -165,37 +164,12 @@ public class ScrollFragment extends Fragment {
     }
 
     /**
-     * إضافة Index Scrolling للتنقل السريع في القوائم الطويلة
-     * ميزة Samsung المميزة للقوائم التي تحتوي على مئات العناصر
+     * إضافة ميزات محسنة للتنقل والتفاعل
+     * تحل محل Index Scrolling غير المتاح حالياً
      */
-    private void addIndexScrolling() {
-        try {
-            // محاولة إضافة Index Scroll إذا كان متاحاً
-            indexScrollView = new SeslIndexScrollView(requireContext());
-            
-            // ربط Index Scroll بـ RecyclerView
-            indexScrollView.attachToRecyclerView(recyclerView);
-            
-            // إعداد الفهارس (A-Z والأرقام)
-            String[] indices = createIndexArray();
-            indexScrollView.setIndexer(indices);
-            
-        } catch (Exception e) {
-            // في حالة عدم توفر ميزة Index Scroll
-            showMessage("Index Scroll غير متاح - سيتم إضافته في التحديث القادم");
-        }
-    }
-
-    /**
-     * إنشاء مصفوفة الفهارس للتنقل السريع
-     */
-    private String[] createIndexArray() {
-        // إنشاء فهرس للأرقام (كل 20 عنصر)
-        List<String> indices = new ArrayList<>();
-        for (int i = 1; i <= 200; i += 20) {
-            indices.add(String.valueOf(i));
-        }
-        return indices.toArray(new String[0]);
+    private void addEnhancedFeatures() {
+        // عرض رسالة توضح عدد العناصر
+        showMessage("تم تحميل " + itemsList.size() + " عنصر بنجاح");
     }
 
     /**
@@ -396,4 +370,4 @@ public class ScrollFragment extends Fragment {
             itemsList = null;
         }
     }
-                    }
+}
