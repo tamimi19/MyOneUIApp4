@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">My OneUI App</string>
-    <string name="nav_home">Home</string>
-    <string name="nav_settings">Settings</string>
-    <string name="menu_theme">Theme</string>
-    <string name="menu_language">Language</string>
-    <string name="notification_title">Notification</string>
-    <string name="theme_light">Light</string>
-    <string name="theme_dark">Dark</string>
-    <string name="theme_system">System Default</string>
-    <string name="language_english">English</string>
-    <string name="language_arabic">Arabic</string>
-    <string name="screen_title">Screen Title</string>
-    <string name="preference_title">Preference Title</string>
-    <string name="button_ok">OK</string>
-    <string name="button_cancel">Cancel</string>
-    <string name="help_text">This is some helpful descriptive text.</string>
+    <!-- اسم التطبيق الذي سيظهر في الهاتف -->
+    <string name="app_name">تطبيق OneUI</string>
     
-    <!-- مطلوب لـ CoordinatorLayout behavior -->
-    <string name="appbar_scrolling_view_behavior" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
+    <!-- نصوص أساسية للتطبيق -->
+    <string name="welcome_message">مرحباً بك في تطبيق OneUI</string>
+    <string name="scroll_list_title">قائمة التمرير</string>
+    <string name="settings_title">الإعدادات</string>
+    <string name="home_title">الشاشة الرئيسية</string>
+    
+    <!-- نصوص الإعدادات -->
+    <string name="dark_mode_title">الوضع الداكن</string>
+    <string name="notifications_title">الإشعارات</string>
+    <string name="language_title">تغيير اللغة</string>
+    
+    <!-- رسائل التأكيد -->
+    <string name="settings_saved">تم حفظ الإعدادات</string>
+    <string name="loading_message">جاري التحميل...</string>
 </resources>
