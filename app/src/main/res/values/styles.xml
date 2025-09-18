@@ -6,7 +6,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- الثيم الأساسي للتطبيق مبني على Material Design -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="AppTheme" parent="Theme.OneUITheme">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
         <item name="colorOnPrimary">@android:color/white</item>
