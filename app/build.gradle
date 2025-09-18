@@ -66,7 +66,6 @@ dependencies {
     implementation 'io.github.oneuiproject.sesl:indexscroll:1.0.3'
     implementation 'io.github.oneuiproject.sesl:picker-basic:1.2.0'
     implementation 'io.github.oneuiproject.sesl:picker-color:1.1.0'
-    }
     
     // أيقونات OneUI
     implementation 'io.github.oneuiproject:icons:1.1.0'
