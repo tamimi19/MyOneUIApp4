@@ -29,6 +29,11 @@ android {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
             excludes += '/META-INF/DEPENDENCIES'
+            exclude 'META-INF/DEPENDENCIES'
+            exclude 'META-INF/LICENSE'
+            exclude 'META-INF/LICENSE.txt'
+            exclude 'META-INF/NOTICE'
+            exclude 'META-INF/NOTICE.txt'
         }
     }
 }
@@ -38,6 +43,10 @@ configurations.all {
     exclude group: 'androidx.appcompat', module: 'appcompat'
     exclude group: 'androidx.core', module: 'core'
     exclude group: 'com.google.android.material', module: 'material'
+    exclude group: 'androidx.recyclerview', module: 'recyclerview'
+    exclude group: 'androidx.coordinatorlayout', module: 'coordinatorlayout'
+    exclude group: 'androidx.swiperefreshlayout', module: 'swiperefreshlayout'
+    exclude group: 'androidx.picker'
 }
 
 dependencies {
@@ -48,14 +57,15 @@ dependencies {
     implementation 'io.github.oneuiproject.sesl:drawerlayout:1.0.0'
     implementation 'io.github.oneuiproject.sesl:recyclerview:1.4.1'
     implementation 'io.github.oneuiproject.sesl:preference:1.1.0'
+    implementation 'io.github.oneuiproject.sesl:swiperefreshlayout:1.0.0'
     
     // OneUI Design Library - الطبقة العليا للمكونات المخصصة
     implementation 'io.github.oneuiproject:design:1.2.6'
     
     // Picker Libraries مع حل تضارب المساحات
+    implementation 'io.github.oneuiproject.sesl:indexscroll:1.0.3'
     implementation 'io.github.oneuiproject.sesl:picker-basic:1.2.0'
-    implementation ('io.github.oneuiproject.sesl:picker-color:1.1.0') {
-        exclude group: 'androidx.picker'  // منع تضارب picker namespaces
+    implementation 'io.github.oneuiproject.sesl:picker-color:1.1.0'
     }
     
     // أيقونات OneUI
