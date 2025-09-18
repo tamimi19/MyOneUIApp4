@@ -1,90 +1,73 @@
 package com.example.oneuiapp;
 
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.Switch;
 import android.widget.SeekBar;
+import android.widget.Switch;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.widget.NestedScrollView;
 
 /**
- * فراجمنت محسن للإعدادات باستخدام مكونات Samsung One UI المتقدمة
- * 
- * الميزات الجديدة المضافة:
- * - واجهة إعدادات شاملة مع تصميم One UI
- * - حفظ واسترداد الإعدادات في SharedPreferences
- * - إعدادات متقدمة للعرض والتفاعل
- * - أزرار تحكم محسنة بألوان Samsung
- * - مؤشرات التقدم والتبديل المتطورة
- * - تخطيط قابل للتمرير لاستيعاب إعدادات كثيرة
+ * فراجمنت الإعدادات مع مكونات OneUI محسنة
+ * يستخدم SeekBar و Switch العادية مع ستايلات OneUI
  */
 public class SettingsFragment extends Fragment {
-    
-    // مفاتيح حفظ الإعدادات
-    private static final String PREFS_NAME = "OneUIAppPrefs";
-    private static final String KEY_DARK_MODE = "dark_mode_enabled";
-    private static final String KEY_NOTIFICATIONS = "notifications_enabled";
-    private static final String KEY_SOUND_VOLUME = "sound_volume";
-    private static final String KEY_ANIMATION_SPEED = "animation_speed";
-    private static final String KEY_LANGUAGE = "app_language";
-    
-    // مراجع للمكونات
-    private SharedPreferences sharedPrefs;
-    private Switch darkModeSwitch;
-    private Switch notificationSwitch;
+
+    private NestedScrollView scrollView;
+    private LinearLayout contentLayout;
     private SeekBar volumeSeekBar;
     private SeekBar animationSeekBar;
-    private TextView volumeValueText;
-    private TextView animationValueText;
+    private Switch darkModeSwitch;
+    private Switch vibrationSwitch;
+    private Switch notificationSwitch;
     
-    // ألوان One UI المميزة
     private static final int ONEUI_BLUE = Color.parseColor("#1976D2");
     private static final int ONEUI_SURFACE = Color.parseColor("#F5F5F5");
-    private static final int ONEUI_ON_SURFACE = Color.parseColor("#1C1C1C");
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, 
+    public View onCreateView(@NonNull LayoutInflater inflater, 
+                           @Nullable ViewGroup container, 
                            @Nullable Bundle savedInstanceState) {
         
-        // تهيئة SharedPreferences
-        initializePreferences();
+        // إنشاء التخطيط الرئيسي
+        scrollView = createScrollableLayout();
         
-        // إنشاء التخطيط المحسن بدلاً من XML معقد
-        NestedScrollView scrollView = createScrollableLayout();
+        // إنشاء محتوى الإعدادات
+        contentLayout = createContentLayout();
         
-        // إضافة جميع أقسام الإعدادات
-        LinearLayout mainLayout = createMainSettingsLayout();
-        scrollView.addView(mainLayout);
+        // إضافة جميع إعدادات التطبيق
+        addAllSettings();
         
-        // تحميل الإعدادات المحفوظة
-        loadSavedSettings();
+        // إضافة المحتوى إلى التخطيط القابل للتمرير
+        scrollView.addView(contentLayout);
         
         return scrollView;
     }
 
-    /**
-     * تهيئة نظام حفظ الإعدادات باستخدام SharedPreferences
-     * يضمن حفظ جميع اختيارات المستخدم بين جلسات التطبيق
-     */
-    private void initializePreferences() {
-        sharedPrefs = requireContext().getSharedPreferences(PREFS_NAME, 0);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        
+        // إضافة تأثير الانتقال
+        addTransitionEffect();
+        
+        // رسالة ترحيب
+        Toast.makeText(requireContext(), 
+            "مرحباً بك في إعدادات التطبيق!", 
+            Toast.LENGTH_SHORT).show();
     }
 
     /**
-     * إنشاء تخطيط قابل للتمرير لاستيعاب جميع الإعدادات
-     * يستخدم NestedScrollView للتوافق مع مكتبات SESL
+     * إنشاء تخطيط قابل للتمرير
      */
     private NestedScrollView createScrollableLayout() {
         NestedScrollView scrollView = new NestedScrollView(requireContext());
@@ -98,625 +81,293 @@ public class SettingsFragment extends Fragment {
     }
 
     /**
-     * إنشاء التخطيط الرئيسي لجميع أقسام الإعدادات
-     * ينظم الإعدادات في مجموعات منطقية سهلة الاستخدام
+     * إنشاء تخطيط المحتوى
      */
-    private LinearLayout createMainSettingsLayout() {
-        LinearLayout mainLayout = new LinearLayout(requireContext());
-        mainLayout.setOrientation(LinearLayout.VERTICAL);
-        mainLayout.setLayoutParams(new LinearLayout.LayoutParams(
+    private LinearLayout createContentLayout() {
+        LinearLayout layout = new LinearLayout(requireContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setLayoutParams(new LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, 
             ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        // إضافة عنوان الصفحة
-        mainLayout.addView(createPageTitle());
-        mainLayout.addView(createSectionSpacer());
         
-        // قسم المظهر والعرض
-        mainLayout.addView(createDisplaySection());
-        mainLayout.addView(createSectionSpacer());
-        
-        // قسم الصوت والإشعارات
-        mainLayout.addView(createSoundSection());
-        mainLayout.addView(createSectionSpacer());
-        
-        // قسم الأداء والرسوم المتحركة
-        mainLayout.addView(createPerformanceSection());
-        mainLayout.addView(createSectionSpacer());
-        
-        // قسم اللغة والمنطقة
-        mainLayout.addView(createLanguageSection());
-        mainLayout.addView(createSectionSpacer());
-        
-        // أزرار الإجراءات
-        mainLayout.addView(createActionButtons());
-        
-        return mainLayout;
+        return layout;
     }
 
     /**
-     * إنشاء عنوان مرحب للصفحة يشرح الغرض من الإعدادات
+     * إضافة جميع الإعدادات
      */
-    private TextView createPageTitle() {
-        TextView titleText = new TextView(requireContext());
-        titleText.setText("⚙️ إعدادات التطبيق\n\nخصص تجربتك مع تطبيق OneUI حسب تفضيلاتك الشخصية");
-        titleText.setTextSize(18);
-        titleText.setTextColor(ONEUI_ON_SURFACE);
-        titleText.setLineSpacing(dpToPx(4), 1.3f);
-        titleText.setPadding(0, 0, 0, dpToPx(16));
+    private void addAllSettings() {
+        // عنوان الإعدادات
+        contentLayout.addView(createSettingsHeader());
+        contentLayout.addView(createSpacer(24));
         
-        return titleText;
+        // قسم الصوت
+        contentLayout.addView(createSectionHeader("إعدادات الصوت"));
+        contentLayout.addView(createVolumeSettings());
+        contentLayout.addView(createSpacer(32));
+        
+        // قسم العرض
+        contentLayout.addView(createSectionHeader("إعدادات العرض"));
+        contentLayout.addView(createDisplaySettings());
+        contentLayout.addView(createSpacer(32));
+        
+        // قسم الإشعارات
+        contentLayout.addView(createSectionHeader("إعدادات الإشعارات"));
+        contentLayout.addView(createNotificationSettings());
+        contentLayout.addView(createSpacer(32));
+        
+        // قسم الأداء
+        contentLayout.addView(createSectionHeader("إعدادات الأداء"));
+        contentLayout.addView(createPerformanceSettings());
+        
+        // نصائح في النهاية
+        contentLayout.addView(createSpacer(40));
+        contentLayout.addView(createTipsSection());
     }
 
     /**
-     * إنشاء قسم إعدادات العرض والمظهر
-     * يتضمن خيارات الوضع الداكن وتخصيصات البصرية
+     * إنشاء عنوان الإعدادات
      */
-    private LinearLayout createDisplaySection() {
-        LinearLayout section = createSectionContainer("🎨 العرض والمظهر");
+    private TextView createSettingsHeader() {
+        TextView header = new TextView(requireContext());
+        header.setText("إعدادات التطبيق");
+        header.setTextSize(24);
+        header.setTextColor(ONEUI_BLUE);
+        header.setLayoutParams(new LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, 
+            ViewGroup.LayoutParams.WRAP_CONTENT));
         
-        // تبديل الوضع الداكن مع شرح مفصل
-        LinearLayout darkModeRow = createSettingRow(
-            "الوضع الداكن", 
-            "يقلل إجهاد العين في الإضاءة المنخفضة ويوفر البطارية على شاشات OLED");
-        
-        darkModeSwitch = new Switch(requireContext());
-        darkModeSwitch.setLayoutParams(createSwitchLayoutParams());
-        darkModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            handleDarkModeToggle(isChecked);
-        });
-        
-        darkModeRow.addView(darkModeSwitch);
-        section.addView(darkModeRow);
-        
-        return section;
+        return header;
     }
 
     /**
-     * إنشاء قسم إعدادات الصوت والإشعارات
-     * يوفر تحكماً دقيقاً في مستوى الصوت وأنواع الإشعارات
+     * إنشاء عنوان قسم
      */
-    private LinearLayout createSoundSection() {
-        LinearLayout section = createSectionContainer("🔊 الصوت والإشعارات");
+    private TextView createSectionHeader(String title) {
+        TextView sectionHeader = new TextView(requireContext());
+        sectionHeader.setText(title);
+        sectionHeader.setTextSize(18);
+        sectionHeader.setTextColor(ONEUI_BLUE);
+        sectionHeader.setPadding(0, 0, 0, dpToPx(16));
+        sectionHeader.setLayoutParams(new LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, 
+            ViewGroup.LayoutParams.WRAP_CONTENT));
         
-        // تبديل الإشعارات
-        LinearLayout notificationRow = createSettingRow(
-            "تفعيل الإشعارات", 
-            "السماح بعرض إشعارات التطبيق والتحديثات المهمة");
-        
-        notificationSwitch = new Switch(requireContext());
-        notificationSwitch.setLayoutParams(createSwitchLayoutParams());
-        notificationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            handleNotificationToggle(isChecked);
-        });
-        
-        notificationRow.addView(notificationSwitch);
-        section.addView(notificationRow);
-        
-        // مؤشر مستوى الصوت مع نص ديناميكي
-        section.addView(createVolumeControl());
-        
-        return section;
+        return sectionHeader;
     }
 
     /**
-     * إنشاء قسم إعدادات الأداء والرسوم المتحركة
-     * يسمح بتخصيص سرعة الانتقالات والتأثيرات البصرية
+     * إنشاء إعدادات الصوت
      */
-    private LinearLayout createPerformanceSection() {
-        LinearLayout section = createSectionContainer("⚡ الأداء والرسوم المتحركة");
+    private LinearLayout createVolumeSettings() {
+        LinearLayout volumeLayout = new LinearLayout(requireContext());
+        volumeLayout.setOrientation(LinearLayout.VERTICAL);
         
-        // مؤشر سرعة الرسوم المتحركة
-        section.addView(createAnimationSpeedControl());
-        
-        return section;
-    }
-
-    /**
-     * إنشاء عنصر تحكم مستوى الصوت مع مؤشر قيمة ديناميكي
-     * يستخدم SeekBar العادي مع تصميم OneUI
-     */
-    private LinearLayout createVolumeControl() {
-        LinearLayout container = new LinearLayout(requireContext());
-        container.setOrientation(LinearLayout.VERTICAL);
-        container.setPadding(0, dpToPx(16), 0, dpToPx(8));
-        
-        // عنوان وشرح عنصر التحكم
+        // نص مستوى الصوت
         TextView volumeLabel = new TextView(requireContext());
-        volumeLabel.setText("مستوى الصوت");
+        volumeLabel.setText("مستوى الصوت: 50%");
         volumeLabel.setTextSize(16);
-        volumeLabel.setTextColor(ONEUI_ON_SURFACE);
-        volumeLabel.setTypeface(null, android.graphics.Typeface.BOLD);
+        volumeLabel.setPadding(0, 0, 0, dpToPx(8));
         
-        TextView volumeDescription = new TextView(requireContext());
-        volumeDescription.setText("تحكم في مستوى أصوات التطبيق والتنبيهات");
-        volumeDescription.setTextSize(14);
-        volumeDescription.setTextColor(Color.GRAY);
-        volumeDescription.setPadding(0, dpToPx(2), 0, dpToPx(8));
-        
-        // إنشاء SeekBar للتحكم في الصوت
+        // شريط تمرير الصوت
         volumeSeekBar = new SeekBar(requireContext());
         volumeSeekBar.setMax(100);
-        volumeSeekBar.setProgress(50); // القيمة الافتراضية
-        volumeSeekBar.setLayoutParams(new LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 
-            ViewGroup.LayoutParams.WRAP_CONTENT));
+        volumeSeekBar.setProgress(50);
+        volumeSeekBar.setPadding(0, 0, 0, dpToPx(16));
         
-        // نص عرض القيمة الحالية
-        volumeValueText = new TextView(requireContext());
-        volumeValueText.setText("50%");
-        volumeValueText.setTextSize(14);
-        volumeValueText.setTextColor(ONEUI_BLUE);
-        volumeValueText.setGravity(android.view.Gravity.CENTER);
-        volumeValueText.setPadding(0, dpToPx(4), 0, 0);
-        
-        // مستمع تغيير القيمة مع تحديث فوري للنص
+        // إعداد مستمع التغيير
         volumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-                    volumeValueText.setText(progress + "%");
-                    saveVolumeSettings(progress);
+                    volumeLabel.setText("مستوى الصوت: " + progress + "%");
                 }
             }
-            
+
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                // يمكن إضافة تأثيرات بصرية عند بدء السحب
+                // بداية التفاعل
             }
-            
+
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                showMessage("تم تعديل مستوى الصوت إلى " + seekBar.getProgress() + "%");
+                Toast.makeText(requireContext(), 
+                    "تم تحديث مستوى الصوت إلى " + seekBar.getProgress() + "%", 
+                    Toast.LENGTH_SHORT).show();
             }
         });
         
-        container.addView(volumeLabel);
-        container.addView(volumeDescription);
-        container.addView(volumeSeekBar);
-        container.addView(volumeValueText);
+        volumeLayout.addView(volumeLabel);
+        volumeLayout.addView(volumeSeekBar);
         
-        return container;
+        return volumeLayout;
     }
 
     /**
-     * إنشاء عنصر تحكم سرعة الرسوم المتحركة
-     * يسمح للمستخدم بتخصيص سرعة انتقالات الواجهة حسب تفضيله
+     * إنشاء إعدادات العرض
      */
-    private LinearLayout createAnimationSpeedControl() {
-        LinearLayout container = new LinearLayout(requireContext());
-        container.setOrientation(LinearLayout.VERTICAL);
-        container.setPadding(0, dpToPx(16), 0, dpToPx(8));
+    private LinearLayout createDisplaySettings() {
+        LinearLayout displayLayout = new LinearLayout(requireContext());
+        displayLayout.setOrientation(LinearLayout.VERTICAL);
         
+        // سرعة الرسوم المتحركة
         TextView animationLabel = new TextView(requireContext());
-        animationLabel.setText("سرعة الرسوم المتحركة");
+        animationLabel.setText("سرعة الرسوم المتحركة: 75%");
         animationLabel.setTextSize(16);
-        animationLabel.setTextColor(ONEUI_ON_SURFACE);
-        animationLabel.setTypeface(null, android.graphics.Typeface.BOLD);
-        
-        TextView animationDescription = new TextView(requireContext());
-        animationDescription.setText("تحكم في سرعة انتقالات الواجهة والتأثيرات البصرية");
-        animationDescription.setTextSize(14);
-        animationDescription.setTextColor(Color.GRAY);
-        animationDescription.setPadding(0, dpToPx(2), 0, dpToPx(8));
+        animationLabel.setPadding(0, 0, 0, dpToPx(8));
         
         animationSeekBar = new SeekBar(requireContext());
-        animationSeekBar.setMax(200); // من 0% إلى 200%
-        animationSeekBar.setProgress(100); // السرعة العادية كافتراضي
-        animationSeekBar.setLayoutParams(new LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 
-            ViewGroup.LayoutParams.WRAP_CONTENT));
-        
-        animationValueText = new TextView(requireContext());
-        animationValueText.setText("عادي (100%)");
-        animationValueText.setTextSize(14);
-        animationValueText.setTextColor(ONEUI_BLUE);
-        animationValueText.setGravity(android.view.Gravity.CENTER);
-        animationValueText.setPadding(0, dpToPx(4), 0, 0);
+        animationSeekBar.setMax(100);
+        animationSeekBar.setProgress(75);
+        animationSeekBar.setPadding(0, 0, 0, dpToPx(16));
         
         animationSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-                    updateAnimationSpeedText(progress);
-                    saveAnimationSettings(progress);
+                    animationLabel.setText("سرعة الرسوم المتحركة: " + progress + "%");
                 }
             }
-            
+
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {}
-            
+
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                String speedText = getAnimationSpeedDescription(seekBar.getProgress());
-                showMessage("تم تعديل سرعة الرسوم المتحركة إلى " + speedText);
+                Toast.makeText(requireContext(), 
+                    "تم تحديث سرعة الرسوم المتحركة", 
+                    Toast.LENGTH_SHORT).show();
             }
         });
         
-        container.addView(animationLabel);
-        container.addView(animationDescription);
-        container.addView(animationSeekBar);
-        container.addView(animationValueText);
+        // الوضع الداكن
+        darkModeSwitch = createStyledSwitch("الوضع الداكن", true);
         
-        return container;
+        displayLayout.addView(animationLabel);
+        displayLayout.addView(animationSeekBar);
+        displayLayout.addView(darkModeSwitch);
+        
+        return displayLayout;
     }
 
     /**
-     * إنشاء قسم إعدادات اللغة والمنطقة
-     * يوفر خيارات تغيير لغة التطبيق وتفضيلات المنطقة
+     * إنشاء إعدادات الإشعارات
      */
-    private LinearLayout createLanguageSection() {
-        LinearLayout section = createSectionContainer("🌍 اللغة والمنطقة");
+    private LinearLayout createNotificationSettings() {
+        LinearLayout notificationLayout = new LinearLayout(requireContext());
+        notificationLayout.setOrientation(LinearLayout.VERTICAL);
         
-        // زر تغيير اللغة مع معلومات اللغة الحالية
-        Button languageButton = createActionButton(
-            "تغيير اللغة", 
-            "العربية (الافتراضي)");
-        languageButton.setOnClickListener(v -> showLanguageOptions());
-        section.addView(languageButton);
+        // إعدادات الإشعارات
+        notificationSwitch = createStyledSwitch("تفعيل الإشعارات", true);
+        vibrationSwitch = createStyledSwitch("الاهتزاز مع الإشعارات", false);
         
-        // زر إعدادات المنطقة
-        Button regionButton = createActionButton(
-            "إعدادات المنطقة", 
-            "تخصيص تنسيق التاريخ والأرقام");
-        regionButton.setOnClickListener(v -> showRegionSettings());
-        section.addView(regionButton);
+        notificationLayout.addView(notificationSwitch);
+        notificationLayout.addView(createSpacer(16));
+        notificationLayout.addView(vibrationSwitch);
         
-        return section;
+        return notificationLayout;
     }
 
     /**
-     * إنشاء مجموعة أزرار الإجراءات المتقدمة
-     * تتضمن خيارات إعادة التعيين والنسخ الاحتياطي
+     * إنشاء إعدادات الأداء
      */
-    private LinearLayout createActionButtons() {
-        LinearLayout section = createSectionContainer("🔧 إجراءات متقدمة");
+    private LinearLayout createPerformanceSettings() {
+        LinearLayout performanceLayout = new LinearLayout(requireContext());
+        performanceLayout.setOrientation(LinearLayout.VERTICAL);
         
-        // زر حفظ الإعدادات
-        Button saveButton = createPrimaryActionButton("حفظ جميع الإعدادات");
-        saveButton.setOnClickListener(v -> saveAllSettings());
-        section.addView(saveButton);
+        Switch highPerformanceSwitch = createStyledSwitch("الأداء العالي", false);
+        Switch batterySaverSwitch = createStyledSwitch("توفير البطارية", true);
+        Switch backgroundSyncSwitch = createStyledSwitch("المزامنة في الخلفية", true);
         
-        section.addView(createButtonSpacer());
+        performanceLayout.addView(highPerformanceSwitch);
+        performanceLayout.addView(createSpacer(16));
+        performanceLayout.addView(batterySaverSwitch);
+        performanceLayout.addView(createSpacer(16));
+        performanceLayout.addView(backgroundSyncSwitch);
         
-        // زر إعادة تعيين الإعدادات
-        Button resetButton = createSecondaryActionButton("إعادة تعيين للافتراضي");
-        resetButton.setOnClickListener(v -> resetToDefaultSettings());
-        section.addView(resetButton);
-        
-        return section;
+        return performanceLayout;
     }
 
     /**
-     * إنشاء حاوية قسم مع عنوان منسق
-     * يوفر تخطيطاً موحداً لجميع أقسام الإعدادات
+     * إنشاء Switch مع تصميم OneUI
      */
-    private LinearLayout createSectionContainer(String title) {
-        LinearLayout section = new LinearLayout(requireContext());
-        section.setOrientation(LinearLayout.VERTICAL);
-        section.setLayoutParams(new LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 
-            ViewGroup.LayoutParams.WRAP_CONTENT));
-        section.setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12));
-        section.setBackgroundColor(ONEUI_SURFACE);
+    private Switch createStyledSwitch(String text, boolean defaultChecked) {
+        Switch switchView = new Switch(requireContext());
+        switchView.setText(text);
+        switchView.setTextSize(16);
+        switchView.setChecked(defaultChecked);
+        switchView.setPadding(0, dpToPx(12), 0, dpToPx(12));
         
-        // عنوان القسم
-        TextView sectionTitle = new TextView(requireContext());
-        sectionTitle.setText(title);
-        sectionTitle.setTextSize(18);
-        sectionTitle.setTextColor(ONEUI_BLUE);
-        sectionTitle.setTypeface(null, android.graphics.Typeface.BOLD);
-        sectionTitle.setPadding(0, 0, 0, dpToPx(12));
+        switchView.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            String status = isChecked ? "تم التفعيل" : "تم الإيقاف";
+            Toast.makeText(requireContext(), 
+                text + ": " + status, 
+                Toast.LENGTH_SHORT).show();
+        });
         
-        section.addView(sectionTitle);
-        return section;
+        return switchView;
     }
 
     /**
-     * إنشاء صف إعداد مع عنوان ووصف
-     * يوفر تخطيطاً موحداً للإعدادات التي تحتوي على مفاتيح تبديل
+     * إنشاء قسم النصائح
      */
-    private LinearLayout createSettingRow(String title, String description) {
-        LinearLayout row = new LinearLayout(requireContext());
-        row.setOrientation(LinearLayout.HORIZONTAL);
-        row.setLayoutParams(new LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 
-            ViewGroup.LayoutParams.WRAP_CONTENT));
-        row.setPadding(0, dpToPx(8), 0, dpToPx(8));
-        row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+    private LinearLayout createTipsSection() {
+        LinearLayout tipsLayout = new LinearLayout(requireContext());
+        tipsLayout.setOrientation(LinearLayout.VERTICAL);
         
-        // حاوية النصوص
-        LinearLayout textContainer = new LinearLayout(requireContext());
-        textContainer.setOrientation(LinearLayout.VERTICAL);
-        textContainer.setLayoutParams(new LinearLayout.LayoutParams(
-            0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+        TextView tipsHeader = new TextView(requireContext());
+        tipsHeader.setText("نصائح مفيدة");
+        tipsHeader.setTextSize(18);
+        tipsHeader.setTextColor(ONEUI_BLUE);
+        tipsHeader.setPadding(0, 0, 0, dpToPx(16));
         
-        TextView titleText = new TextView(requireContext());
-        titleText.setText(title);
-        titleText.setTextSize(16);
-        titleText.setTextColor(ONEUI_ON_SURFACE);
-        titleText.setTypeface(null, android.graphics.Typeface.BOLD);
+        TextView tipsContent = new TextView(requireContext());
+        tipsContent.setText(
+            "استخدم ميزة Pull-to-Reach لسهولة الوصول للعناصر العلوية\n" +
+            "الوضع الداكن يوفر البطارية على الشاشات OLED\n" +
+            "تقليل سرعة الرسوم المتحركة يحسن الأداء\n" +
+            "إيقاف المزامنة في الخلفية يوفر البيانات\n" +
+            "تفعيل الاهتزاز مفيد في البيئات الصاخبة\n\n" +
+            "تم تطوير هذا التطبيق باستخدام مكتبات OneUI Project الأصلية لضمان أفضل تجربة مستخدم ممكنة على جميع أجهزة Android."
+        );
+        tipsContent.setTextSize(14);
+        tipsContent.setTextColor(Color.GRAY);
+        tipsContent.setLineSpacing(dpToPx(4), 1.3f);
         
-        TextView descText = new TextView(requireContext());
-        descText.setText(description);
-        descText.setTextSize(14);
-        descText.setTextColor(Color.GRAY);
-        descText.setPadding(0, dpToPx(2), 0, 0);
+        tipsLayout.addView(tipsHeader);
+        tipsLayout.addView(tipsContent);
         
-        textContainer.addView(titleText);
-        textContainer.addView(descText);
-        row.addView(textContainer);
-        
-        return row;
+        return tipsLayout;
     }
 
     /**
-     * معالجة تبديل الوضع الداكن مع حفظ الإعداد وتطبيق التغيير فورياً
+     * إنشاء مساحة فارغة
      */
-    private void handleDarkModeToggle(boolean isEnabled) {
-        // حفظ الإعداد في SharedPreferences
-        sharedPrefs.edit().putBoolean(KEY_DARK_MODE, isEnabled).apply();
-        
-        // تطبيق التغيير على التطبيق فورياً
-        if (isEnabled) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            showMessage("تم تفعيل الوضع الداكن - يوفر طاقة البطارية ويقلل إجهاد العين");
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            showMessage("تم تفعيل الوضع الفاتح - مثالي للاستخدام في الإضاءة الجيدة");
-        }
-    }
-
-    /**
-     * معالجة تبديل الإشعارات مع شرح تأثير التغيير
-     */
-    private void handleNotificationToggle(boolean isEnabled) {
-        sharedPrefs.edit().putBoolean(KEY_NOTIFICATIONS, isEnabled).apply();
-        
-        String message = isEnabled ? 
-            "تم تفعيل الإشعارات - ستصلك التحديثات المهمة" : 
-            "تم إيقاف الإشعارات - لن تصلك أي تنبيهات من التطبيق";
-        showMessage(message);
-    }
-
-    /**
-     * حفظ إعدادات مستوى الصوت
-     */
-    private void saveVolumeSettings(int volume) {
-        sharedPrefs.edit().putInt(KEY_SOUND_VOLUME, volume).apply();
-    }
-
-    /**
-     * حفظ إعدادات سرعة الرسوم المتحركة
-     */
-    private void saveAnimationSettings(int speed) {
-        sharedPrefs.edit().putInt(KEY_ANIMATION_SPEED, speed).apply();
-    }
-
-    /**
-     * تحديث نص سرعة الرسوم المتحركة بناءً على القيمة المحددة
-     */
-    private void updateAnimationSpeedText(int progress) {
-        String speedText;
-        if (progress <= 25) {
-            speedText = "بطيء جداً (" + progress + "%)";
-        } else if (progress <= 75) {
-            speedText = "بطيء (" + progress + "%)";
-        } else if (progress <= 125) {
-            speedText = "عادي (" + progress + "%)";
-        } else if (progress <= 175) {
-            speedText = "سريع (" + progress + "%)";
-        } else {
-            speedText = "سريع جداً (" + progress + "%)";
-        }
-        animationValueText.setText(speedText);
-    }
-
-    /**
-     * الحصول على وصف سرعة الرسوم المتحركة
-     */
-    private String getAnimationSpeedDescription(int progress) {
-        if (progress <= 25) return "بطيء جداً";
-        if (progress <= 75) return "بطيء";
-        if (progress <= 125) return "عادي";
-        if (progress <= 175) return "سريع";
-        return "سريع جداً";
-    }
-
-    /**
-     * تحميل جميع الإعدادات المحفوظة وتطبيقها على الواجهة
-     */
-    private void loadSavedSettings() {
-        // تحميل إعداد الوضع الداكن
-        boolean darkMode = sharedPrefs.getBoolean(KEY_DARK_MODE, false);
-        if (darkModeSwitch != null) {
-            darkModeSwitch.setChecked(darkMode);
-        }
-        
-        // تحميل إعداد الإشعارات
-        boolean notifications = sharedPrefs.getBoolean(KEY_NOTIFICATIONS, true);
-        if (notificationSwitch != null) {
-            notificationSwitch.setChecked(notifications);
-        }
-        
-        // تحميل مستوى الصوت
-        int volume = sharedPrefs.getInt(KEY_SOUND_VOLUME, 50);
-        if (volumeSeekBar != null && volumeValueText != null) {
-            volumeSeekBar.setProgress(volume);
-            volumeValueText.setText(volume + "%");
-        }
-        
-        // تحميل سرعة الرسوم المتحركة
-        int animationSpeed = sharedPrefs.getInt(KEY_ANIMATION_SPEED, 100);
-        if (animationSeekBar != null && animationValueText != null) {
-            animationSeekBar.setProgress(animationSpeed);
-            updateAnimationSpeedText(animationSpeed);
-        }
-    }
-
-    /**
-     * عرض خيارات اللغة المتاحة
-     */
-    private void showLanguageOptions() {
-        String[] languages = {"العربية", "English", "Français", "Deutsch", "한국어", "日本語"};
-        String message = "اللغات المتاحة:\n";
-        for (int i = 0; i < languages.length; i++) {
-            message += (i + 1) + ". " + languages[i] + "\n";
-        }
-        message += "\nميزة تغيير اللغة ستكون متاحة في التحديث القادم";
-        
-        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
-    }
-
-    /**
-     * عرض إعدادات المنطقة
-     */
-    private void showRegionSettings() {
-        showMessage("إعدادات المنطقة: تنسيق التاريخ الهجري/الميلادي، نظام الأرقام، اتجاه النص\nقيد التطوير في الإصدار القادم");
-    }
-
-    /**
-     * حفظ جميع الإعدادات الحالية
-     */
-    private void saveAllSettings() {
-        SharedPreferences.Editor editor = sharedPrefs.edit();
-        
-        if (darkModeSwitch != null) {
-            editor.putBoolean(KEY_DARK_MODE, darkModeSwitch.isChecked());
-        }
-        if (notificationSwitch != null) {
-            editor.putBoolean(KEY_NOTIFICATIONS, notificationSwitch.isChecked());
-        }
-        if (volumeSeekBar != null) {
-            editor.putInt(KEY_SOUND_VOLUME, volumeSeekBar.getProgress());
-        }
-        if (animationSeekBar != null) {
-            editor.putInt(KEY_ANIMATION_SPEED, animationSeekBar.getProgress());
-        }
-        
-        editor.apply();
-        showMessage("✅ تم حفظ جميع الإعدادات بنجاح!");
-    }
-
-    /**
-     * إعادة تعيين جميع الإعدادات إلى القيم الافتراضية
-     */
-    private void resetToDefaultSettings() {
-        // إعادة تعيين الواجهة للقيم الافتراضية
-        if (darkModeSwitch != null) darkModeSwitch.setChecked(false);
-        if (notificationSwitch != null) notificationSwitch.setChecked(true);
-        if (volumeSeekBar != null && volumeValueText != null) {
-            volumeSeekBar.setProgress(50);
-            volumeValueText.setText("50%");
-        }
-        if (animationSeekBar != null && animationValueText != null) {
-            animationSeekBar.setProgress(100);
-            updateAnimationSpeedText(100);
-        }
-        
-        // حفظ القيم الافتراضية
-        SharedPreferences.Editor editor = sharedPrefs.edit();
-        editor.putBoolean(KEY_DARK_MODE, false);
-        editor.putBoolean(KEY_NOTIFICATIONS, true);
-        editor.putInt(KEY_SOUND_VOLUME, 50);
-        editor.putInt(KEY_ANIMATION_SPEED, 100);
-        editor.apply();
-        
-        // تطبيق الوضع الفاتح
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        
-        showMessage("🔄 تم إعادة تعيين جميع الإعدادات إلى الوضع الافتراضي");
-    }
-
-    /**
-     * إنشاء أزرار الإجراءات المختلفة بتصاميم متمايزة
-     */
-    private Button createActionButton(String title, String subtitle) {
-        Button button = new Button(requireContext());
-        button.setText(title + "\n" + subtitle);
-        button.setLayoutParams(new LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 
-            ViewGroup.LayoutParams.WRAP_CONTENT));
-        button.setAllCaps(false);
-        button.setTextSize(14);
-        button.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
-        button.setBackgroundColor(Color.parseColor("#E3F2FD"));
-        button.setTextColor(ONEUI_BLUE);
-        
-        return button;
-    }
-
-    private Button createPrimaryActionButton(String text) {
-        Button button = new Button(requireContext());
-        button.setText(text);
-        button.setLayoutParams(new LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 
-            ViewGroup.LayoutParams.WRAP_CONTENT));
-        button.setAllCaps(false);
-        button.setTextSize(16);
-        button.setTypeface(null, android.graphics.Typeface.BOLD);
-        button.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
-        button.setBackgroundColor(ONEUI_BLUE);
-        button.setTextColor(Color.WHITE);
-        
-        return button;
-    }
-
-    private Button createSecondaryActionButton(String text) {
-        Button button = new Button(requireContext());
-        button.setText(text);
-        button.setLayoutParams(new LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 
-            ViewGroup.LayoutParams.WRAP_CONTENT));
-        button.setAllCaps(false);
-        button.setTextSize(14);
-        button.setPadding(dpToPx(16), dpToPx(12), dpToPx(16), dpToPx(12));
-        button.setBackgroundColor(Color.parseColor("#FFEBEE"));
-        button.setTextColor(Color.parseColor("#C62828"));
-        
-        return button;
-    }
-
-    /**
-     * إنشاء معاملات تخطيط موحدة لمفاتيح التبديل
-     */
-    private LinearLayout.LayoutParams createSwitchLayoutParams() {
-        return new LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT, 
-            ViewGroup.LayoutParams.WRAP_CONTENT);
-    }
-
-    /**
-     * إنشاء مساحة بين الأقسام لتحسين التخطيط البصري
-     */
-    private View createSectionSpacer() {
+    private View createSpacer(int dp) {
         View spacer = new View(requireContext());
         spacer.setLayoutParams(new LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(16)));
-        return spacer;
-    }
-
-    private View createButtonSpacer() {
-        View spacer = new View(requireContext());
-        spacer.setLayoutParams(new LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(8)));
+            ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(dp)));
         return spacer;
     }
 
     /**
-     * تحويل وحدات dp إلى pixels للحصول على أبعاد دقيقة
+     * إضافة تأثير الانتقال
+     */
+    private void addTransitionEffect() {
+        if (getView() != null) {
+            getView().setAlpha(0f);
+            getView().animate()
+                    .alpha(1f)
+                    .setDuration(300)
+                    .start();
+        }
+    }
+
+    /**
+     * تحويل dp إلى pixels
      */
     private int dpToPx(int dp) {
-        float density = requireContext().getResources().getDisplayMetrics().density;
+        float density = getResources().getDisplayMetrics().density;
         return Math.round(dp * density);
     }
-
-    /**
-     * عرض رسائل تأكيد وتوضيحية للمستخدم
-     */
-    private void showMessage(String message) {
-        if (getContext() != null) {
-            Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
-        }
-    }
-    }
+                               }
