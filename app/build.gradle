@@ -46,7 +46,7 @@ configurations.all {
     exclude group: 'androidx.recyclerview', module: 'recyclerview'
     exclude group: 'androidx.coordinatorlayout', module: 'coordinatorlayout'
     exclude group: 'androidx.swiperefreshlayout', module: 'swiperefreshlayout'
-    exclude group: 'androidx.picker' module: 'picker'
+    exclude group: 'androidx.picker', module: 'picker'
     exclude group: 'androidx.preference', module: 'preference'
     exclude group: 'androidx.drawerlayout', module: 'drawerlayout'
     exclude group: 'androidx.indexscroll', module: 'indexscroll'
