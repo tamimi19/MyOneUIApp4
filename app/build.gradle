@@ -88,5 +88,5 @@ dependencies {
     
 
     // مكتبات AndroidX المتوافقة - هذه لا تتعارض مع sesl
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 }
