@@ -11,14 +11,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Switch;
+import android.widget.SeekBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AppCompatDelegate;
-
-// استيرادات One UI المتقدمة للإعدادات
-import com.samsung.android.ui.widget.SeslNestedScrollView;
-import com.samsung.android.ui.widget.SeslSeekBar;
+import androidx.core.widget.NestedScrollView;
 
 /**
  * فراجمنت محسن للإعدادات باستخدام مكونات Samsung One UI المتقدمة
@@ -45,8 +43,8 @@ public class SettingsFragment extends Fragment {
     private SharedPreferences sharedPrefs;
     private Switch darkModeSwitch;
     private Switch notificationSwitch;
-    private SeslSeekBar volumeSeekBar;
-    private SeslSeekBar animationSeekBar;
+    private SeekBar volumeSeekBar;
+    private SeekBar animationSeekBar;
     private TextView volumeValueText;
     private TextView animationValueText;
     
@@ -64,7 +62,7 @@ public class SettingsFragment extends Fragment {
         initializePreferences();
         
         // إنشاء التخطيط المحسن بدلاً من XML معقد
-        SeslNestedScrollView scrollView = createScrollableLayout();
+        NestedScrollView scrollView = createScrollableLayout();
         
         // إضافة جميع أقسام الإعدادات
         LinearLayout mainLayout = createMainSettingsLayout();
@@ -86,10 +84,10 @@ public class SettingsFragment extends Fragment {
 
     /**
      * إنشاء تخطيط قابل للتمرير لاستيعاب جميع الإعدادات
-     * يستخدم SeslNestedScrollView للتوافق الأمثل مع Samsung
+     * يستخدم NestedScrollView للتوافق مع مكتبات SESL
      */
-    private SeslNestedScrollView createScrollableLayout() {
-        SeslNestedScrollView scrollView = new SeslNestedScrollView(requireContext());
+    private NestedScrollView createScrollableLayout() {
+        NestedScrollView scrollView = new NestedScrollView(requireContext());
         scrollView.setLayoutParams(new ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, 
             ViewGroup.LayoutParams.MATCH_PARENT));
@@ -216,7 +214,7 @@ public class SettingsFragment extends Fragment {
 
     /**
      * إنشاء عنصر تحكم مستوى الصوت مع مؤشر قيمة ديناميكي
-     * يستخدم SeslSeekBar للحصول على تجربة Samsung الأصلية
+     * يستخدم SeekBar العادي مع تصميم OneUI
      */
     private LinearLayout createVolumeControl() {
         LinearLayout container = new LinearLayout(requireContext());
@@ -236,8 +234,8 @@ public class SettingsFragment extends Fragment {
         volumeDescription.setTextColor(Color.GRAY);
         volumeDescription.setPadding(0, dpToPx(2), 0, dpToPx(8));
         
-        // إنشاء SeslSeekBar للتحكم في الصوت
-        volumeSeekBar = new SeslSeekBar(requireContext());
+        // إنشاء SeekBar للتحكم في الصوت
+        volumeSeekBar = new SeekBar(requireContext());
         volumeSeekBar.setMax(100);
         volumeSeekBar.setProgress(50); // القيمة الافتراضية
         volumeSeekBar.setLayoutParams(new LinearLayout.LayoutParams(
@@ -253,9 +251,9 @@ public class SettingsFragment extends Fragment {
         volumeValueText.setPadding(0, dpToPx(4), 0, 0);
         
         // مستمع تغيير القيمة مع تحديث فوري للنص
-        volumeSeekBar.setOnSeekBarChangeListener(new SeslSeekBar.OnSeekBarChangeListener() {
+        volumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeslSeekBar seekBar, int progress, boolean fromUser) {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
                     volumeValueText.setText(progress + "%");
                     saveVolumeSettings(progress);
@@ -263,12 +261,12 @@ public class SettingsFragment extends Fragment {
             }
             
             @Override
-            public void onStartTrackingTouch(SeslSeekBar seekBar) {
+            public void onStartTrackingTouch(SeekBar seekBar) {
                 // يمكن إضافة تأثيرات بصرية عند بدء السحب
             }
             
             @Override
-            public void onStopTrackingTouch(SeslSeekBar seekBar) {
+            public void onStopTrackingTouch(SeekBar seekBar) {
                 showMessage("تم تعديل مستوى الصوت إلى " + seekBar.getProgress() + "%");
             }
         });
@@ -302,7 +300,7 @@ public class SettingsFragment extends Fragment {
         animationDescription.setTextColor(Color.GRAY);
         animationDescription.setPadding(0, dpToPx(2), 0, dpToPx(8));
         
-        animationSeekBar = new SeslSeekBar(requireContext());
+        animationSeekBar = new SeekBar(requireContext());
         animationSeekBar.setMax(200); // من 0% إلى 200%
         animationSeekBar.setProgress(100); // السرعة العادية كافتراضي
         animationSeekBar.setLayoutParams(new LinearLayout.LayoutParams(
@@ -316,9 +314,9 @@ public class SettingsFragment extends Fragment {
         animationValueText.setGravity(android.view.Gravity.CENTER);
         animationValueText.setPadding(0, dpToPx(4), 0, 0);
         
-        animationSeekBar.setOnSeekBarChangeListener(new SeslSeekBar.OnSeekBarChangeListener() {
+        animationSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeslSeekBar seekBar, int progress, boolean fromUser) {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
                     updateAnimationSpeedText(progress);
                     saveAnimationSettings(progress);
@@ -326,10 +324,10 @@ public class SettingsFragment extends Fragment {
             }
             
             @Override
-            public void onStartTrackingTouch(SeslSeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {}
             
             @Override
-            public void onStopTrackingTouch(SeslSeekBar seekBar) {
+            public void onStopTrackingTouch(SeekBar seekBar) {
                 String speedText = getAnimationSpeedDescription(seekBar.getProgress());
                 showMessage("تم تعديل سرعة الرسوم المتحركة إلى " + speedText);
             }
@@ -721,4 +719,4 @@ public class SettingsFragment extends Fragment {
             Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
         }
     }
-}
+    }
