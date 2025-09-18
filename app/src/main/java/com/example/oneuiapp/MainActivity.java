@@ -11,13 +11,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-// استيرادات One UI المحسنة
+// استيرادات One UI المُصححة
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.samsung.android.ui.widget.SeslNestedScrollView;
+import androidx.core.widget.NestedScrollView; // مُصحح: استخدام NestedScrollView العادي
 
 /**
  * الفئة الرئيسية للتطبيق مع تحسينات One UI الكاملة
@@ -27,7 +27,7 @@ import com.samsung.android.ui.widget.SeslNestedScrollView;
  * - CollapsingToolbarLayout للعنوان المنهار
  * - SwipeRefreshLayout للسحب لأسفل والتحديث  
  * - CoordinatorLayout للتحكم المحسن بالتخطيط
- * - SeslNestedScrollView لتمرير محسن متوافق مع Samsung
+ * - NestedScrollView لتمرير محسن متوافق مع Samsung
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private CollapsingToolbarLayout collapsingToolbar;
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearLayout contentContainer;
-    private SeslNestedScrollView nestedScrollView;
+    private NestedScrollView nestedScrollView; // مُصحح
     private Fragment currentFragment;
     
     // ألوان One UI المميزة
@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
             new CollapsingToolbarLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 
                 ViewGroup.LayoutParams.MATCH_PARENT);
+        // مُصحح: استخدام طريقة صحيحة لتعيين نمط الانهيار
         collapsingParams.setCollapseMode(CollapsingToolbarLayout.LayoutParams.COLLAPSE_MODE_PARALLAX);
         collapsingToolbar.setLayoutParams(collapsingParams);
         
@@ -114,18 +115,17 @@ public class MainActivity extends AppCompatActivity {
         collapsingToolbar.setStatusBarScrimColor(ONEUI_BLUE);
         collapsingToolbar.setTitle("تطبيق OneUI");
         
-        // تفعيل ميزة العنوان الفرعي المميزة في Samsung
-        if (collapsingToolbar instanceof com.google.android.material.appbar.CollapsingToolbarLayout) {
-            // تطبيق تحسينات Samsung للعنوان
-            collapsingToolbar.setExpandedTitleTextAppearance(android.R.style.TextAppearance_Material_Display1);
-            collapsingToolbar.setCollapsedTitleTextAppearance(android.R.style.TextAppearance_Material_Widget_ActionBar_Title);
-        }
+        // تطبيق تحسينات Samsung للعنوان
+        collapsingToolbar.setExpandedTitleTextAppearance(android.R.style.TextAppearance_Material_Display1);
+        collapsingToolbar.setCollapsedTitleTextAppearance(android.R.style.TextAppearance_Material_Widget_ActionBar_Title);
 
         // إنشاء Toolbar داخل CollapsingToolbar
         Toolbar toolbar = new Toolbar(this);
-        Toolbar.LayoutParams toolbarParams = new Toolbar.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 
-            dpToPx(56));
+        CollapsingToolbarLayout.LayoutParams toolbarParams = 
+            new CollapsingToolbarLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, 
+                dpToPx(56));
+        // مُصحح: استخدام طريقة صحيحة لتعيين نمط الانهيار
         toolbarParams.setCollapseMode(CollapsingToolbarLayout.LayoutParams.COLLAPSE_MODE_PIN);
         toolbar.setLayoutParams(toolbarParams);
         
@@ -154,12 +154,12 @@ public class MainActivity extends AppCompatActivity {
         refreshParams.setBehavior(new AppBarLayout.ScrollingViewBehavior());
         swipeRefreshLayout.setLayoutParams(refreshParams);
         
-        // تخصيص ألوان السحب للتحديث
-        swipeRefreshLayout.setColorSchemeColors(ONEUI_BLUE, Color.GREEN, Color.ORANGE);
+        // مُصحح: استخدام ألوان موجودة فقط
+        swipeRefreshLayout.setColorSchemeColors(ONEUI_BLUE, Color.GREEN, Color.parseColor("#FF9800"));
         swipeRefreshLayout.setProgressBackgroundColorSchemeColor(ONEUI_SURFACE);
 
-        // SeslNestedScrollView للتمرير المحسن المتوافق مع Samsung
-        nestedScrollView = new SeslNestedScrollView(this);
+        // مُصحح: NestedScrollView للتمرير المحسن المتوافق مع Samsung
+        nestedScrollView = new NestedScrollView(this);
         nestedScrollView.setLayoutParams(new ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, 
             ViewGroup.LayoutParams.MATCH_PARENT));
@@ -173,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
             ViewGroup.LayoutParams.MATCH_PARENT, 
             ViewGroup.LayoutParams.WRAP_CONTENT));
         contentContainer.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
+        contentContainer.setId(android.R.id.content); // إضافة ID للفراجمنت
 
         // تجميع العناصر
         nestedScrollView.addView(contentContainer);
@@ -205,22 +206,12 @@ public class MainActivity extends AppCompatActivity {
         // تطبيق إعدادات Samsung المتقدمة للعنوان المنهار
         collapsingToolbar.setScrimsShown(true, false);
         
-        // إضافة نص فرعي (ميزة Samsung الخاصة)
-        if (collapsingToolbar instanceof com.google.android.material.appbar.CollapsingToolbarLayout) {
-            // محاولة استخدام ميزات Samsung الخاصة إذا كانت متاحة
-            try {
-                // هذه الطريقة خاصة بـ Samsung One UI
-                collapsingToolbar.getClass().getMethod("seslSetSubtitle", CharSequence.class)
-                    .invoke(collapsingToolbar, "مدعوم بتقنية Samsung One UI");
-            } catch (Exception e) {
-                // في حالة عدم توفر ميزات Samsung، استخدم البديل
-                addSubtitleManually();
-            }
-        }
+        // إضافة عنوان فرعي يدوياً
+        addSubtitleManually();
     }
 
     /**
-     * إضافة عنوان فرعي يدوياً في حالة عدم توفر ميزات Samsung
+     * إضافة عنوان فرعي يدوياً
      */
     private void addSubtitleManually() {
         TextView subtitleText = new TextView(this);
@@ -329,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
                            "• شريط أدوات قابل للانهيار مع تأثيرات Samsung\n" +
                            "• السحب لأسفل للتحديث (جرب الآن!)\n" +
                            "• تخطيط متقدم باستخدام CoordinatorLayout\n" +
-                           "• تمرير محسن مع SeslNestedScrollView\n" +
+                           "• تمرير محسن مع NestedScrollView\n" +
                            "• ألوان One UI الأصلية\n" +
                            "• دعم كامل لأجهزة Samsung وغير Samsung\n\n" +
                            "التحسينات التقنية:\n" +
@@ -393,7 +384,7 @@ public class MainActivity extends AppCompatActivity {
         contentContainer.removeAllViews();
         
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(contentContainer.getId(), newFragment);
+        transaction.replace(android.R.id.content, newFragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }
@@ -472,4 +463,4 @@ public class MainActivity extends AppCompatActivity {
             collapsingToolbar.setTitle(toolbarTitle);
         }
     }
-            }
+    }
