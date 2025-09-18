@@ -1,4 +1,4 @@
-// ملف SettingsFragment.java
+
 package com.example.oneuiapp;
 
 import android.os.Bundle;
