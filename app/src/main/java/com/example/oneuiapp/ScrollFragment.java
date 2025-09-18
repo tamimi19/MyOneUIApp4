@@ -1,4 +1,4 @@
-// ملف ScrollFragment.java
+
 package com.example.oneuiapp;
 
 import android.graphics.Color;
