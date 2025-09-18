@@ -7,302 +7,165 @@ import android.widget.TextView;
 import android.widget.Button;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import android.widget.FrameLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-
-// استيرادات One UI المُصححة
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
-import androidx.core.widget.NestedScrollView; // مُصحح: استخدام NestedScrollView العادي
+import androidx.core.widget.NestedScrollView;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 /**
- * الفئة الرئيسية للتطبيق مع تحسينات One UI الكاملة
- * تستخدم مكتبات Samsung الأصلية لتحقيق مظهر One UI الحقيقي
- * 
- * الميزات الجديدة المضافة:
- * - CollapsingToolbarLayout للعنوان المنهار
- * - SwipeRefreshLayout للسحب لأسفل والتحديث  
- * - CoordinatorLayout للتحكم المحسن بالتخطيط
- * - NestedScrollView لتمرير محسن متوافق مع Samsung
+ * MainActivity محسنة لـ OneUI مع ميزة Pull-to-Reach
+ * تستخدم المكتبات الصحيحة من OneUI Project
  */
 public class MainActivity extends AppCompatActivity {
 
-    // المكونات الرئيسية للواجهة
-    private CoordinatorLayout rootCoordinator;
+    private DrawerLayout drawerLayout;
     private CollapsingToolbarLayout collapsingToolbar;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private LinearLayout contentContainer;
-    private NestedScrollView nestedScrollView; // مُصحح
+    private FrameLayout contentContainer;
+    private NestedScrollView nestedScrollView;
+    private AppBarLayout appBarLayout;
+    private Toolbar toolbar;
+    
     private Fragment currentFragment;
     
-    // ألوان One UI المميزة
     private static final int ONEUI_BLUE = Color.parseColor("#1976D2");
-    private static final int ONEUI_SURFACE = Color.parseColor("#F5F5F5");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
         
-        // إنشاء الواجهة باستخدام مكونات One UI المحسنة
-        createOneUILayout();
-        
-        // إعداد ميزة السحب للتحديث
+        initViews();
+        setupToolbar();
+        setupPullToReach();
         setupSwipeToRefresh();
-        
-        // إعداد شريط الأدوات القابل للانهيار
-        setupCollapsingToolbar();
-        
-        // تحميل المحتوى الافتراضي
         loadDefaultContent();
-        
-        // رسالة ترحيب تؤكد أن One UI يعمل بنجاح
-        showWelcomeMessage();
     }
 
-    /**
-     * إنشاء تخطيط محسن باستخدام مكونات One UI الأصلية
-     * يستخدم CoordinatorLayout كحاوية رئيسية لدعم السلوكيات المتقدمة
-     */
-    private void createOneUILayout() {
-        // الحاوية الرئيسية - CoordinatorLayout يدعم السلوكيات المتقدمة
-        rootCoordinator = new CoordinatorLayout(this);
-        rootCoordinator.setLayoutParams(new ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 
-            ViewGroup.LayoutParams.MATCH_PARENT));
-        rootCoordinator.setFitsSystemWindows(true);
-
-        // إنشاء AppBarLayout للعنوان المنهار
-        AppBarLayout appBarLayout = createAppBarLayout();
-        
-        // إنشاء منطقة المحتوى مع السحب للتحديث
-        createContentArea();
-        
-        // تجميع المكونات في التخطيط الرئيسي
-        rootCoordinator.addView(appBarLayout);
-        rootCoordinator.addView(swipeRefreshLayout);
-        
-        // تعيين التخطيط كمحتوى للنشاط
-        setContentView(rootCoordinator);
+    private void initViews() {
+        drawerLayout = findViewById(R.id.drawerLayout);
+        collapsingToolbar = findViewById(R.id.collapsing_toolbar);
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh);
+        contentContainer = findViewById(R.id.main_container);
+        nestedScrollView = findViewById(R.id.nested_scroll);
+        appBarLayout = findViewById(R.id.appbar);
+        toolbar = findViewById(R.id.toolbar);
     }
 
-    /**
-     * إنشاء AppBarLayout مع CollapsingToolbarLayout لتأثير العنوان المنهار
-     * هذه واحدة من الميزات المميزة في One UI
-     */
-    private AppBarLayout createAppBarLayout() {
-        AppBarLayout appBarLayout = new AppBarLayout(this);
-        AppBarLayout.LayoutParams appBarParams = new AppBarLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 
-            dpToPx(200)); // ارتفاع العنوان القابل للانهيار
-        appBarLayout.setLayoutParams(appBarParams);
-
-        // إنشاء CollapsingToolbarLayout
-        collapsingToolbar = new CollapsingToolbarLayout(this);
-        CollapsingToolbarLayout.LayoutParams collapsingParams = 
-            new CollapsingToolbarLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, 
-                ViewGroup.LayoutParams.MATCH_PARENT);
-        // مُصحح: استخدام طريقة صحيحة لتعيين نمط الانهيار
-        collapsingParams.setCollapseMode(CollapsingToolbarLayout.LayoutParams.COLLAPSE_MODE_PARALLAX);
-        collapsingToolbar.setLayoutParams(collapsingParams);
-        
-        // تخصيص ألوان CollapsingToolbar
-        collapsingToolbar.setContentScrimColor(ONEUI_BLUE);
-        collapsingToolbar.setStatusBarScrimColor(ONEUI_BLUE);
-        collapsingToolbar.setTitle("تطبيق OneUI");
-        
-        // تطبيق تحسينات Samsung للعنوان
-        collapsingToolbar.setExpandedTitleTextAppearance(android.R.style.TextAppearance_Material_Display1);
-        collapsingToolbar.setCollapsedTitleTextAppearance(android.R.style.TextAppearance_Material_Widget_ActionBar_Title);
-
-        // إنشاء Toolbar داخل CollapsingToolbar
-        Toolbar toolbar = new Toolbar(this);
-        CollapsingToolbarLayout.LayoutParams toolbarParams = 
-            new CollapsingToolbarLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, 
-                dpToPx(56));
-        // مُصحح: استخدام طريقة صحيحة لتعيين نمط الانهيار
-        toolbarParams.setCollapseMode(CollapsingToolbarLayout.LayoutParams.COLLAPSE_MODE_PIN);
-        toolbar.setLayoutParams(toolbarParams);
-        
-        // تعيين Toolbar كـ ActionBar
+    private void setupToolbar() {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false); // العنوان سيظهر في CollapsingToolbar
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
-
-        // إضافة Toolbar إلى CollapsingToolbar
-        collapsingToolbar.addView(toolbar);
-        appBarLayout.addView(collapsingToolbar);
         
-        return appBarLayout;
+        // استخدام الطرق الجديدة من SESL
+        collapsingToolbar.setTitle("تطبيق OneUI");
+        collapsingToolbar.seslSetSubtitle("مدعوم بتقنية Samsung");
+        collapsingToolbar.seslEnableFadeToolbarTitle(true);
+        
+        collapsingToolbar.setCollapsedTitleTextColor(Color.WHITE);
+        collapsingToolbar.setExpandedTitleColor(Color.WHITE);
     }
 
-    /**
-     * إنشاء منطقة المحتوى مع دعم السحب للتحديث وتمرير محسن
-     */
-    private void createContentArea() {
-        // SwipeRefreshLayout للسحب لأسفل والتحديث
-        swipeRefreshLayout = new SwipeRefreshLayout(this);
-        CoordinatorLayout.LayoutParams refreshParams = new CoordinatorLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 
-            ViewGroup.LayoutParams.MATCH_PARENT);
-        refreshParams.setBehavior(new AppBarLayout.ScrollingViewBehavior());
-        swipeRefreshLayout.setLayoutParams(refreshParams);
+    private void setupPullToReach() {
+        CoordinatorLayout.LayoutParams params = 
+            (CoordinatorLayout.LayoutParams) appBarLayout.getLayoutParams();
+        AppBarLayout.Behavior behavior = new AppBarLayout.Behavior();
         
-        // مُصحح: استخدام ألوان موجودة فقط
-        swipeRefreshLayout.setColorSchemeColors(ONEUI_BLUE, Color.GREEN, Color.parseColor("#FF9800"));
-        swipeRefreshLayout.setProgressBackgroundColorSchemeColor(ONEUI_SURFACE);
-
-        // مُصحح: NestedScrollView للتمرير المحسن المتوافق مع Samsung
-        nestedScrollView = new NestedScrollView(this);
-        nestedScrollView.setLayoutParams(new ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 
-            ViewGroup.LayoutParams.MATCH_PARENT));
-        nestedScrollView.setFillViewport(true);
-        nestedScrollView.setNestedScrollingEnabled(true);
-
-        // الحاوية الداخلية للمحتوى
-        contentContainer = new LinearLayout(this);
-        contentContainer.setOrientation(LinearLayout.VERTICAL);
-        contentContainer.setLayoutParams(new LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 
-            ViewGroup.LayoutParams.WRAP_CONTENT));
-        contentContainer.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
-        contentContainer.setId(android.R.id.content); // إضافة ID للفراجمنت
-
-        // تجميع العناصر
-        nestedScrollView.addView(contentContainer);
-        swipeRefreshLayout.addView(nestedScrollView);
-    }
-
-    /**
-     * إعداد ميزة السحب للتحديث - واحدة من أهم ميزات One UI
-     */
-    private void setupSwipeToRefresh() {
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            // محاكاة عملية تحديث البيانات
-            Toast.makeText(this, "جاري تحديث البيانات...", Toast.LENGTH_SHORT).show();
+        behavior.setDragCallback(new AppBarLayout.Behavior.DragCallback() {
+            @Override
+            public boolean canDrag(AppBarLayout appBarLayout) {
+                return true;
+            }
+        });
+        
+        params.setBehavior(behavior);
+        appBarLayout.setLayoutParams(params);
+        
+        appBarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
+            float percentage = Math.abs(verticalOffset) / (float) appBarLayout1.getTotalScrollRange();
             
-            // إيقاف مؤشر التحديث بعد 2 ثانية
+            if (percentage == 1.0f) {
+                toolbar.setAlpha(1.0f);
+            } else if (percentage == 0.0f) {
+                toolbar.setAlpha(0.7f);
+            } else {
+                toolbar.setAlpha(0.8f + (percentage * 0.2f));
+            }
+        });
+    }
+
+    private void setupSwipeToRefresh() {
+        swipeRefreshLayout.setColorSchemeColors(
+            ONEUI_BLUE, 
+            Color.parseColor("#4CAF50"), 
+            Color.parseColor("#FF9800")
+        );
+        
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            Toast.makeText(this, "جاري تحديث المحتوى...", Toast.LENGTH_SHORT).show();
+            
             swipeRefreshLayout.postDelayed(() -> {
                 swipeRefreshLayout.setRefreshing(false);
-                Toast.makeText(this, "تم تحديث البيانات بنجاح!", Toast.LENGTH_SHORT).show();
-                
-                // إعادة تحميل المحتوى الحالي
                 refreshCurrentContent();
+                Toast.makeText(this, "تم التحديث بنجاح!", Toast.LENGTH_SHORT).show();
             }, 2000);
         });
     }
 
-    /**
-     * إعداد شريط الأدوات القابل للانهيار بميزات Samsung المحسنة
-     */
-    private void setupCollapsingToolbar() {
-        // تطبيق إعدادات Samsung المتقدمة للعنوان المنهار
-        collapsingToolbar.setScrimsShown(true, false);
-        
-        // إضافة عنوان فرعي يدوياً
-        addSubtitleManually();
-    }
-
-    /**
-     * إضافة عنوان فرعي يدوياً
-     */
-    private void addSubtitleManually() {
-        TextView subtitleText = new TextView(this);
-        subtitleText.setText("مدعوم بتقنية Samsung One UI");
-        subtitleText.setTextSize(14);
-        subtitleText.setTextColor(Color.WHITE);
-        subtitleText.setPadding(dpToPx(16), dpToPx(56), dpToPx(16), dpToPx(16));
-        
-        CollapsingToolbarLayout.LayoutParams subtitleParams = 
-            new CollapsingToolbarLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, 
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        subtitleParams.setCollapseMode(CollapsingToolbarLayout.LayoutParams.COLLAPSE_MODE_PARALLAX);
-        subtitleText.setLayoutParams(subtitleParams);
-        
-        collapsingToolbar.addView(subtitleText);
-    }
-
-    /**
-     * تحديث المحتوى الحالي عند السحب للتحديث
-     */
-    private void refreshCurrentContent() {
-        if (currentFragment != null) {
-            // إعادة إنشاء الفراجمنت الحالي
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.detach(currentFragment);
-            transaction.attach(currentFragment);
-            transaction.commit();
-        } else {
-            // إعادة تحميل المحتوى الرئيسي
-            loadDefaultContent();
-        }
-    }
-
-    /**
-     * تحميل المحتوى الافتراضي مع أزرار التنقل المحسنة
-     */
     private void loadDefaultContent() {
         contentContainer.removeAllViews();
         
-        // إضافة أزرار التنقل المحسنة
-        LinearLayout navigationLayout = createEnhancedNavigationButtons();
-        contentContainer.addView(navigationLayout);
+        LinearLayout mainContent = new LinearLayout(this);
+        mainContent.setOrientation(LinearLayout.VERTICAL);
+        mainContent.setLayoutParams(new FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, 
+            ViewGroup.LayoutParams.WRAP_CONTENT));
         
-        // إضافة محتوى ترحيبي مفصل
-        TextView welcomeContent = createWelcomeContent();
-        contentContainer.addView(welcomeContent);
+        mainContent.addView(createNavigationButtons());
+        mainContent.addView(createWelcomeText());
+        
+        contentContainer.addView(mainContent);
     }
 
-    /**
-     * إنشاء أزرار تنقل محسنة بتصميم One UI
-     */
-    private LinearLayout createEnhancedNavigationButtons() {
+    private LinearLayout createNavigationButtons() {
         LinearLayout buttonContainer = new LinearLayout(this);
         buttonContainer.setOrientation(LinearLayout.VERTICAL);
         buttonContainer.setPadding(0, 0, 0, dpToPx(24));
-
-        // زر قائمة التمرير مع تحسينات One UI
-        Button scrollButton = createOneUIButton("📜 قائمة التمرير", "استعرض 200 عنصر");
+        
+        Button scrollButton = createStyledButton("قائمة التمرير", "200 عنصر مع تمرير محسن");
         scrollButton.setOnClickListener(v -> showScrollFragment());
         
-        // زر الإعدادات مع تحسينات One UI
-        Button settingsButton = createOneUIButton("⚙️ الإعدادات", "تخصيص التطبيق");
+        Button settingsButton = createStyledButton("الإعدادات", "تخصيص واجهة التطبيق");
         settingsButton.setOnClickListener(v -> showSettingsFragment());
         
-        // زر العودة للرئيسية
-        Button homeButton = createOneUIButton("🏠 الرئيسية", "العودة للشاشة الرئيسية");
+        Button homeButton = createStyledButton("الصفحة الرئيسية", "العودة للشاشة الرئيسية");
         homeButton.setOnClickListener(v -> showHomeContent());
-
+        
         buttonContainer.addView(scrollButton);
-        buttonContainer.addView(createButtonSpacer());
+        buttonContainer.addView(createSpacer(12));
         buttonContainer.addView(settingsButton);
-        buttonContainer.addView(createButtonSpacer());
+        buttonContainer.addView(createSpacer(12));
         buttonContainer.addView(homeButton);
         
         return buttonContainer;
     }
 
-    /**
-     * إنشاء زر بتصميم One UI المحسن
-     */
-    private Button createOneUIButton(String title, String subtitle) {
+    private Button createStyledButton(String title, String subtitle) {
         Button button = new Button(this);
         button.setText(title + "\n" + subtitle);
         button.setLayoutParams(new LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 
-            dpToPx(72))); // ارتفاع مناسب لسطرين من النص
+            ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(70)));
         
-        // تطبيق تصميم One UI على الزر
-        button.setAllCaps(false); // عدم تحويل النص للأحرف الكبيرة
-        button.setTextSize(16);
+        button.setAllCaps(false);
+        button.setTextSize(15);
         button.setTextColor(Color.WHITE);
         button.setBackgroundColor(ONEUI_BLUE);
         button.setPadding(dpToPx(16), dpToPx(12), dpToPx(16), dpToPx(12));
@@ -310,25 +173,26 @@ public class MainActivity extends AppCompatActivity {
         return button;
     }
 
-    /**
-     * إنشاء محتوى ترحيبي مفصل يشرح ميزات One UI
-     */
-    private TextView createWelcomeContent() {
+    private TextView createWelcomeText() {
         TextView welcomeText = new TextView(this);
-        welcomeText.setText("مرحباً بك في تطبيق OneUI المحسن! 🎉\n\n" +
-                           "الميزات الجديدة المضافة:\n" +
-                           "• شريط أدوات قابل للانهيار مع تأثيرات Samsung\n" +
-                           "• السحب لأسفل للتحديث (جرب الآن!)\n" +
-                           "• تخطيط متقدم باستخدام CoordinatorLayout\n" +
-                           "• تمرير محسن مع NestedScrollView\n" +
-                           "• ألوان One UI الأصلية\n" +
-                           "• دعم كامل لأجهزة Samsung وغير Samsung\n\n" +
-                           "التحسينات التقنية:\n" +
-                           "• استبدال مكتبات Google بمكتبات Samsung الأصلية\n" +
-                           "• تحسين الأداء والسلاسة\n" +
-                           "• دعم الوضع الداكن والفاتح\n" +
-                           "• تخطيط متجاوب لجميع أحجام الشاشات\n\n" +
-                           "استخدم الأزرار أعلاه للتنقل واكتشاف المزيد من الميزات!");
+        welcomeText.setText(
+            "مرحباً بك في تطبيق OneUI المحسن!\n\n" +
+            
+            "ميزة Pull-to-Reach الجديدة:\n" +
+            "اسحب الشاشة لأسفل للوصول السهل للعناصر العلوية\n" +
+            "مثالية للاستخدام بيد واحدة\n" +
+            "تعمل تلقائياً مع الشريط العلوي القابل للطي\n\n" +
+            
+            "الميزات الأخرى:\n" +
+            "شريط أدوات قابل للانهيار مع تأثيرات Samsung\n" +
+            "السحب لأسفل للتحديث\n" +
+            "تخطيط متقدم باستخدام CoordinatorLayout\n" +
+            "تمرير محسن مع NestedScrollView\n" +
+            "ألوان One UI الأصلية\n" +
+            "دعم كامل لأجهزة Samsung وغير Samsung\n\n" +
+            
+            "استخدم الأزرار أعلاه للتنقل واكتشاف المزيد من الميزات!"
+        );
                            
         welcomeText.setTextSize(16);
         welcomeText.setLineSpacing(dpToPx(4), 1.3f);
@@ -338,60 +202,42 @@ public class MainActivity extends AppCompatActivity {
         return welcomeText;
     }
 
-    /**
-     * إنشاء مساحة بين الأزرار
-     */
-    private android.view.View createButtonSpacer() {
+    private android.view.View createSpacer(int dp) {
         android.view.View spacer = new android.view.View(this);
         spacer.setLayoutParams(new LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(12)));
+            ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(dp)));
         return spacer;
     }
 
-    /**
-     * عرض فراجمنت قائمة التمرير مع تحديث العنوان
-     */
     private void showScrollFragment() {
         collapsingToolbar.setTitle("قائمة التمرير");
         replaceFragment(new ScrollFragment());
-        showConfirmationMessage("تم تحميل قائمة التمرير مع 200 عنصر");
+        Toast.makeText(this, "تم تحميل قائمة التمرير", Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * عرض فراجمنت الإعدادات مع تحديث العنوان
-     */
     private void showSettingsFragment() {
         collapsingToolbar.setTitle("إعدادات التطبيق");
         replaceFragment(new SettingsFragment());
-        showConfirmationMessage("تم فتح إعدادات التطبيق");
+        Toast.makeText(this, "تم فتح إعدادات التطبيق", Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * عرض المحتوى الرئيسي مع تحديث العنوان
-     */
     private void showHomeContent() {
         collapsingToolbar.setTitle("تطبيق OneUI");
         clearFragments();
         loadDefaultContent();
-        showConfirmationMessage("مرحباً بعودتك للشاشة الرئيسية");
+        Toast.makeText(this, "مرحباً بعودتك للشاشة الرئيسية", Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * استبدال الفراجمنت الحالي بفراجمنت جديد
-     */
     private void replaceFragment(Fragment newFragment) {
         currentFragment = newFragment;
         contentContainer.removeAllViews();
         
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(android.R.id.content, newFragment);
+        transaction.replace(R.id.main_container, newFragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }
 
-    /**
-     * إزالة جميع الفراجمنتس والعودة للمحتوى الرئيسي
-     */
     private void clearFragments() {
         if (currentFragment != null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -401,60 +247,39 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * عرض رسالة ترحيب تؤكد أن One UI يعمل بنجاح
-     */
-    private void showWelcomeMessage() {
-        Toast.makeText(this, 
-            "🎉 تم تشغيل One UI بنجاح! جميع المكتبات تعمل بشكل صحيح.", 
-            Toast.LENGTH_LONG).show();
+    private void refreshCurrentContent() {
+        if (currentFragment != null) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.detach(currentFragment);
+            transaction.attach(currentFragment);
+            transaction.commit();
+        } else {
+            loadDefaultContent();
+        }
     }
 
-    /**
-     * عرض رسالة تأكيد للإجراءات المختلفة
-     */
-    private void showConfirmationMessage(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * تحويل وحدات dp إلى pixels للحصول على أبعاد دقيقة
-     * مهم جداً لضمان عرض صحيح على جميع الشاشات
-     */
     private int dpToPx(int dp) {
         float density = getResources().getDisplayMetrics().density;
         return Math.round(dp * density);
     }
 
-    /**
-     * التعامل مع زر الرجوع بطريقة محسنة تراعي One UI
-     */
     @Override
     public void onBackPressed() {
-        // إذا كان هناك فراجمنتس في المكدس، ارجع إليها
         if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
             getSupportFragmentManager().popBackStack();
             collapsingToolbar.setTitle("تطبيق OneUI");
             loadDefaultContent();
         } else {
-            // وإلا اغلق التطبيق مع تأثير انتقالي
             super.onBackPressed();
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }
     }
 
-    /**
-     * حفظ حالة التطبيق عند التوقف
-     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("toolbar_title", collapsingToolbar.getTitle().toString());
     }
 
-    /**
-     * استعادة حالة التطبيق عند العودة
-     */
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
@@ -463,4 +288,4 @@ public class MainActivity extends AppCompatActivity {
             collapsingToolbar.setTitle(toolbarTitle);
         }
     }
-    }
+}
