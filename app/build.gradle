@@ -55,6 +55,7 @@ configurations.all {
     exclude group: 'androidx.viewpager2', module: 'viewpager2'
     exclude group: 'androidx.picker', module: 'picker'
     exclude group: 'androidx.apppickerview', module: 'apppickerview'
+    exclude group: 'androidx.fragment', module: 'fragment'
 }
 
 dependencies {
@@ -91,6 +92,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     
     // Fragment support (متوافق مع One UI)
-    implementation 'androidx.fragment:fragment:1.6.2'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 }
