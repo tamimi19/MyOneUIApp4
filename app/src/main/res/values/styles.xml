@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+    ملف الأنماط والثيمات المتوافق مع OneUI
+    يحتوي على جميع التعريفات المطلوبة للتصميم المتقدم
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- الثيم الأساسي للتطبيق مبني على OneUI -->
+    <style name="AppTheme" parent="OneUITheme">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorSecondaryVariant">@color/colorSecondaryVariant</item>
+        <item name="colorOnSecondary">@android:color/black</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        
+        <!-- ألوان الخلفيات والسطوح -->
+        <item name="android:colorBackground">@color/oneui_background_color</item>
+        <item name="colorSurface">@color/oneui_surface_color</item>
+        <item name="colorOnSurface">@color/oneui_text_primary</item>
+        
+        <!-- تخصيص شريط الحالة -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        
+        <!-- إعدادات النوافذ -->
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+    </style>
+
+    <!-- ثيم للأنشطة بدون شريط إجراءات -->
+    <style name="AppTheme.NoActionBar" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
+
+    <!-- أنماط النصوص للـ CollapsingToolbar -->
+    <style name="TextAppearance.OneUI.CollapsingToolbar.Expanded" parent="TextAppearance.Design.CollapsingToolbar.Expanded">
+        <item name="android:textSize">32sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">sec-roboto-light</item>
+        <item name="android:letterSpacing">0.02</item>
+    </style>
+
+    <style name="TextAppearance.OneUI.CollapsingToolbar.Collapsed" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">sec-roboto-regular</item>
+    </style>
+
+    <style name="TextAppearance.OneUI.CollapsingToolbar.Subtitle" parent="TextAppearance.AppCompat.Body2">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">#B3FFFFFF</item>
+        <item name="android:fontFamily">sec-roboto-light</item>
+        <item name="android:alpha">0.7</item>
+    </style>
+
+    <!-- نمط للأزرار بتصميم OneUI -->
+    <style name="OneUI.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/oneui_button_ripple</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sec-roboto-medium</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:paddingLeft">24dp</item>
+        <item name="android:paddingRight">24dp</item>
+        <item name="android:elevation">2dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="cornerRadius">8dp</item>
+    </style>
+
+    <!-- نمط للأزرار المحددة (Outlined) -->
+    <style name="OneUI.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="strokeColor">@color/colorPrimary</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="cornerRadius">8dp</item>
+    </style>
+
+    <!-- نمط للـ Navigation View -->
+    <style name="OneUINavigationView" parent="Widget.Design.NavigationView">
+        <item name="android:background">@color/oneui_surface_color</item>
+        <item name="itemTextColor">@color/oneui_text_primary</item>
+        <item name="itemIconTint">@color/colorPrimary</item>
+        <item name="itemBackground">@drawable/oneui_button_ripple</item>
+    </style>
+
+    <!-- أنماط للنصوص المختلفة -->
+    <style name="OneUI.Text.Title" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/oneui_text_primary</item>
+        <item name="android:fontFamily">sec-roboto-medium</item>
+    </style>
+
+    <style name="OneUI.Text.Subtitle" parent="TextAppearance.AppCompat.Subhead">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/oneui_text_secondary</item>
+        <item name="android:fontFamily">sec-roboto-regular</item>
+    </style>
+
+    <style name="OneUI.Text.Body" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/oneui_text_primary</item>
+        <item name="android:fontFamily">sec-roboto-regular</item>
+        <item name="android:lineSpacingExtra">4dp</item>
+    </style>
+
+    <!-- نمط للـ AppBarLayout -->
+    <style name="OneUI.AppBarLayout" parent="Widget.Design.AppBarLayout">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="elevation">0dp</item>
+        <item name="android:stateListAnimator">@null</item>
