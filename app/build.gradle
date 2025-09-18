@@ -1,14 +1,13 @@
 plugins {
     id 'com.android.application'
 }
-
 android {
     namespace 'com.example.oneuiapp'
     compileSdk 34
 
     defaultConfig {
         applicationId "com.example.oneuiapp"
-        minSdk 23  // الحد الأدنى المدعوم من OneUI
+        minSdk 23
         targetSdk 34
         versionCode 1
         versionName "1.0"
@@ -19,84 +18,85 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-        debug {
-            // تسهيل عملية التطوير والاختبار
-            debuggable true
-            minifyEnabled false
-        }
     }
 
     compileOptions {
-        // OneUI libraries تتطلب Java 8 كحد أدنى
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    // حل تضارب الملفات والموارد المكررة
+    // إضافة packagingOptions لحل تضارب المساحات بين picker libraries
     packagingOptions {
         resources {
-            excludes += [
-                '/META-INF/{AL2.0,LGPL2.1}',
-                'META-INF/DEPENDENCIES',
-                'META-INF/LICENSE*',
-                'META-INF/NOTICE*',
-                'META-INF/ASL2.0'
-            ]
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+            exclude 'META-INF/DEPENDENCIES'
+            exclude 'META-INF/LICENSE'
+            exclude 'META-INF/LICENSE.txt'
+            exclude 'META-INF/NOTICE'
+            exclude 'META-INF/NOTICE.txt'
         }
     }
 }
 
-// إزالة مكتبات Google الأصلية - هذا إجباري لعمل SESL بشكل صحيح
-// هذا القسم يمنع Android Studio من استيراد النسخ الأصلية حتى لو طلبتها مكتبة أخرى
+// إزالة مكتبات Google الأصلية - مطلوب للعمل مع SESL
 configurations.all {
     exclude group: 'androidx.appcompat', module: 'appcompat'
     exclude group: 'androidx.core', module: 'core'
     exclude group: 'com.google.android.material', module: 'material'
+    exclude group: 'androidx.recyclerview', module: 'recyclerview'
     exclude group: 'androidx.coordinatorlayout', module: 'coordinatorlayout'
     exclude group: 'androidx.swiperefreshlayout', module: 'swiperefreshlayout'
-    exclude group: 'androidx.recyclerview', module: 'recyclerview'
     exclude group: 'androidx.preference', module: 'preference'
     exclude group: 'androidx.drawerlayout', module: 'drawerlayout'
+    exclude group: 'androidx.indexscroll', module: 'indexscroll'
+    exclude group: 'androidx.picker-basic', module: 'picker-basic'
     exclude group: 'androidx.viewpager', module: 'viewpager'
     exclude group: 'androidx.viewpager2', module: 'viewpager2'
+    exclude group: 'androidx.apppickerview', module: 'apppickerview'
     exclude group: 'androidx.fragment', module: 'fragment'
     exclude group: 'androidx.customview', module: 'customview'
 }
 
 dependencies {
-    // المكتبات الأساسية لـ OneUI (sesl14 series - الأحدث والأكثر استقراراً)
-    // هذه المكتبات تحل محل مكتبات Google بالكامل
-    implementation 'io.github.oneuiproject.sesl:appcompat:1.4.0-sesl14'
-    implementation 'io.github.oneuiproject.sesl:material:1.5.0-sesl14'
-    implementation 'io.github.oneuiproject.sesl:coordinatorlayout:1.2.0-sesl14'
-    implementation 'io.github.oneuiproject.sesl:swiperefreshlayout:1.1.0-sesl14'
-    implementation 'io.github.oneuiproject.sesl:recyclerview:1.3.0-sesl14'
-    implementation 'io.github.oneuiproject.sesl:preference:1.2.1-sesl14'
-    implementation 'io.github.oneuiproject.sesl:drawerlayout:1.2.0-sesl14'
-    implementation 'io.github.oneuiproject.sesl:viewpager:1.1.0-sesl14'
-    implementation 'io.github.oneuiproject.sesl:viewpager2:1.1.0-sesl14'
+    // OneUI Core Libraries (SESL) - الطبقة الأساسية التي تحل محل مكتبات Google
+    implementation 'io.github.oneuiproject.sesl:appcompat:1.4.0'
+    implementation 'io.github.oneuiproject.sesl:material:1.5.0'
+    implementation 'io.github.oneuiproject.sesl:coordinatorlayout:1.0.0'
+    implementation 'io.github.oneuiproject.sesl:drawerlayout:1.0.0'
+    implementation 'io.github.oneuiproject.sesl:recyclerview:1.4.1'
+    implementation 'io.github.oneuiproject.sesl:preference:1.1.0'
+    implementation 'io.github.oneuiproject.sesl:swiperefreshlayout:1.0.0'
+    implementation 'io.github.oneuiproject.sesl:viewpager:1.1.0'
+    implementation 'io.github.oneuiproject.sesl:viewpager2:1.1.0'
+    implementation 'io.github.oneuiproject.sesl:core:1.3.0'
+    implementation 'io.github.oneuiproject.sesl:customview:1.0.0'
+    implementation 'io.github.oneuiproject.sesl:fragment:1.0.0'
     
-    // مكتبات Samsung المتخصصة - تحتوي على مكونات فريدة مثل منتقي التاريخ والألوان
-    implementation 'io.github.oneuiproject.sesl:apppickerview:1.0.18-sesl14'
-    implementation 'io.github.oneuiproject.sesl:indexscroll:1.0.14-sesl14'
-    implementation 'io.github.oneuiproject.sesl:picker-basic:1.0.37-sesl14'
-    implementation 'io.github.oneuiproject.sesl:picker-color:1.0.25-sesl14'
-    implementation 'io.github.oneuiproject.sesl:slidingpanelayout:1.2.0-sesl14'
     
-    // مكتبة التصميم عالية المستوى - تحتوي على مكونات جاهزة ومعدة مسبقاً
-    implementation 'io.github.oneuiproject:design:2.5.5'
+    // OneUI Design Library - الطبقة العليا للمكونات المخصصة
+    implementation 'io.github.oneuiproject:design:1.2.6'
     
-    // مجموعة أيقونات OneUI الرسمية - أكثر من 950 أيقونة
+    
+    // مكتبات Samsung
+    implementation 'io.github.oneuiproject.sesl:indexscroll:1.0.3'
+    implementation 'io.github.oneuiproject.sesl:picker-basic:1.2.0'
+    implementation 'io.github.oneuiproject.sesl:apppickerview:1.0.0'
+    
+    
+    // أيقونات OneUI
     implementation 'io.github.oneuiproject:icons:1.1.0'
     
+
     // مكتبات AndroidX المتوافقة - هذه لا تتعارض مع sesl
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.lifecycle:lifecycle-viewmodel:2.7.0'
     implementation 'androidx.lifecycle:lifecycle-livedata:2.7.0'
     implementation 'androidx.lifecycle:lifecycle-common-java8:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     
-    // مكتبات الاختبار القياسية
+    
+    // مكتبات الاختبار العادية
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'  
 }
