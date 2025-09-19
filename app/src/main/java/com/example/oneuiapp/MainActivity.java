@@ -65,13 +65,20 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
         
-        // استخدام الطرق الجديدة من SESL CollapsingToolbarLayout
-        collapsingToolbar.setTitle("تطبيق OneUI");
-        collapsingToolbar.seslSetSubtitle("مدعوم بتقنية Samsung");
-        collapsingToolbar.seslEnableFadeToolbarTitle(true);
-        
-        collapsingToolbar.setCollapsedTitleTextColor(Color.WHITE);
-        collapsingToolbar.setExpandedTitleColor(Color.WHITE);
+        // التأكد من وجود CollapsingToolbarLayout قبل استخدام طرق SESL
+        if (collapsingToolbar != null) {
+            collapsingToolbar.setTitle("تطبيق OneUI");
+            try {
+                collapsingToolbar.seslSetSubtitle("مدعوم بتقنية Samsung");
+                collapsingToolbar.seslEnableFadeToolbarTitle(true);
+            } catch (NoSuchMethodError e) {
+                // إذا لم تكن طرق SESL متاحة، استخدم العادية فقط
+                android.util.Log.w("MainActivity", "SESL methods not available");
+            }
+            
+            collapsingToolbar.setCollapsedTitleTextColor(Color.WHITE);
+            collapsingToolbar.setExpandedTitleColor(Color.WHITE);
+        }
     }
 
     private void setupPullToReach() {
@@ -302,4 +309,4 @@ public class MainActivity extends AppCompatActivity {
             collapsingToolbar.seslSetSubtitle(toolbarSubtitle);
         }
     }
-            }
+}
