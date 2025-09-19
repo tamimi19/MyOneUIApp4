@@ -215,13 +215,23 @@ public class MainActivity extends AppCompatActivity {
     }
     
     private void createFallbackInterface() {
-        setContentView(new LinearLayout(this));
+        LinearLayout fallbackLayout = new LinearLayout(this);
+        fallbackLayout.setOrientation(LinearLayout.VERTICAL);
+        fallbackLayout.setLayoutParams(new LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, 
+            ViewGroup.LayoutParams.MATCH_PARENT));
+        fallbackLayout.setPadding(dpToPx(40), dpToPx(40), dpToPx(40), dpToPx(40));
+        
         TextView errorText = new TextView(this);
         errorText.setText("خطأ في تحميل التطبيق\nتحقق من السجلات للتفاصيل");
         errorText.setTextSize(18);
-        errorText.setPadding(40, 40, 40, 40);
         errorText.setTextColor(Color.RED);
-        ((LinearLayout) findViewById(android.R.id.content)).addView(errorText);
+        errorText.setLayoutParams(new LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, 
+            ViewGroup.LayoutParams.WRAP_CONTENT));
+        
+        fallbackLayout.addView(errorText);
+        setContentView(fallbackLayout);
     }
     
     private void showToast(String message) {
@@ -242,4 +252,4 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
-                               }
+        }
