@@ -21,7 +21,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 /**
  * MainActivity محسنة لـ OneUI مع ميزة Pull-to-Reach
- * تستخدم المكتبات الصحيحة من OneUI Project
+ * تستخدم المكتبات الصحيحة من OneUI Project مع دعم SESL CollapsingToolbarLayout
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -50,12 +50,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        drawerLayout = findViewById(R.id.drawerLayout);
+        drawerLayout = findViewById(R.id.drawer_layout);
         collapsingToolbar = findViewById(R.id.collapsing_toolbar);
         swipeRefreshLayout = findViewById(R.id.swipe_refresh);
         contentContainer = findViewById(R.id.main_container);
         nestedScrollView = findViewById(R.id.nested_scroll);
-        appBarLayout = findViewById(R.id.appbar);
+        appBarLayout = findViewById(R.id.app_bar);
         toolbar = findViewById(R.id.toolbar);
     }
 
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
         
-        // استخدام الطرق الجديدة من SESL
+        // استخدام الطرق الجديدة من SESL CollapsingToolbarLayout
         collapsingToolbar.setTitle("تطبيق OneUI");
         collapsingToolbar.seslSetSubtitle("مدعوم بتقنية Samsung");
         collapsingToolbar.seslEnableFadeToolbarTitle(true);
@@ -176,15 +176,20 @@ public class MainActivity extends AppCompatActivity {
     private TextView createWelcomeText() {
         TextView welcomeText = new TextView(this);
         welcomeText.setText(
-            "مرحباً بك في تطبيق OneUI المحسن!\n\n" +
+            "مرحباً بك في تطبيق OneUI المحسن مع SESL!\n\n" +
             
             "ميزة Pull-to-Reach الجديدة:\n" +
             "اسحب الشاشة لأسفل للوصول السهل للعناصر العلوية\n" +
             "مثالية للاستخدام بيد واحدة\n" +
             "تعمل تلقائياً مع الشريط العلوي القابل للطي\n\n" +
             
+            "الميزات المحسنة مع SESL:\n" +
+            "CollapsingToolbarLayout مع دعم العناوين الفرعية\n" +
+            "تأثير الاختفاء المحسن للعنوان (Fade Effect)\n" +
+            "دعم العناوين المخصصة والموسعة\n" +
+            "تصميم One UI الأصلي من Samsung\n\n" +
+            
             "الميزات الأخرى:\n" +
-            "شريط أدوات قابل للانهيار مع تأثيرات Samsung\n" +
             "السحب لأسفل للتحديث\n" +
             "تخطيط متقدم باستخدام CoordinatorLayout\n" +
             "تمرير محسن مع NestedScrollView\n" +
@@ -211,18 +216,21 @@ public class MainActivity extends AppCompatActivity {
 
     private void showScrollFragment() {
         collapsingToolbar.setTitle("قائمة التمرير");
+        collapsingToolbar.seslSetSubtitle("عرض محسن للبيانات");
         replaceFragment(new ScrollFragment());
         Toast.makeText(this, "تم تحميل قائمة التمرير", Toast.LENGTH_SHORT).show();
     }
 
     private void showSettingsFragment() {
         collapsingToolbar.setTitle("إعدادات التطبيق");
+        collapsingToolbar.seslSetSubtitle("تخصيص التطبيق");
         replaceFragment(new SettingsFragment());
         Toast.makeText(this, "تم فتح إعدادات التطبيق", Toast.LENGTH_SHORT).show();
     }
 
     private void showHomeContent() {
         collapsingToolbar.setTitle("تطبيق OneUI");
+        collapsingToolbar.seslSetSubtitle("مدعوم بتقنية Samsung");
         clearFragments();
         loadDefaultContent();
         Toast.makeText(this, "مرحباً بعودتك للشاشة الرئيسية", Toast.LENGTH_SHORT).show();
@@ -268,6 +276,7 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
             getSupportFragmentManager().popBackStack();
             collapsingToolbar.setTitle("تطبيق OneUI");
+            collapsingToolbar.seslSetSubtitle("مدعوم بتقنية Samsung");
             loadDefaultContent();
         } else {
             super.onBackPressed();
@@ -278,6 +287,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("toolbar_title", collapsingToolbar.getTitle().toString());
+        if (collapsingToolbar.getSubTitle() != null) {
+            outState.putString("toolbar_subtitle", collapsingToolbar.getSubTitle().toString());
+        }
     }
 
     @Override
@@ -285,7 +297,9 @@ public class MainActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
         if (savedInstanceState != null) {
             String toolbarTitle = savedInstanceState.getString("toolbar_title", "تطبيق OneUI");
+            String toolbarSubtitle = savedInstanceState.getString("toolbar_subtitle", "مدعوم بتقنية Samsung");
             collapsingToolbar.setTitle(toolbarTitle);
+            collapsingToolbar.seslSetSubtitle(toolbarSubtitle);
         }
     }
-}
+            }
