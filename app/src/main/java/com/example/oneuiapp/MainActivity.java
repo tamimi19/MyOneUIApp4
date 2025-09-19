@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -21,8 +20,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 /**
- * MainActivity محسنة لـ OneUI مع ميزة Pull-to-Reach
- * تستخدم المكتبات الصحيحة من OneUI Project مع دعم SESL CollapsingToolbarLayout
+ * MainActivity مبسطة لتجنب مشاكل الثيمات والموارد
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -35,35 +33,29 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     
     private Fragment currentFragment;
-    
     private static final int ONEUI_BLUE = Color.parseColor("#1976D2");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        // تهيئة معالج الأخطاء قبل أي شيء آخر
+        // تهيئة معالج الأخطاء
         CrashHandler.initialize(this);
-        
-        // تنظيف السجلات القديمة
         CrashHandler.cleanOldLogs(this);
         
-        setContentView(R.layout.activity_main);
-        
         try {
-            initViews();
-            setupToolbar();
-            setupPullToReach();
-            setupSwipeToRefresh();
-            loadDefaultContent();
+            setContentView(R.layout.activity_main);
+            initializeViews();
+            setupUserInterface();
+            loadMainContent();
+            
         } catch (Exception e) {
-            Log.e("MainActivity", "خطأ في onCreate", e);
-            // في حالة حدوث خطأ، اعرض رسالة وأغلق بأمان
-            Toast.makeText(this, "خطأ في تهيئة التطبيق، تحقق من السجلات", Toast.LENGTH_LONG).show();
+            Log.e("MainActivity", "خطأ في تهيئة التطبيق", e);
+            createFallbackInterface();
         }
     }
 
-    private void initViews() {
+    private void initializeViews() {
         drawerLayout = findViewById(R.id.drawer_layout);
         collapsingToolbar = findViewById(R.id.collapsing_toolbar);
         swipeRefreshLayout = findViewById(R.id.swipe_refresh);
@@ -73,304 +65,169 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
     }
 
-    private void setupToolbar() {
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
+    private void setupUserInterface() {
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayShowTitleEnabled(false);
+            }
         }
         
-        // التأكد من وجود CollapsingToolbarLayout قبل استخدام طرق SESL
         if (collapsingToolbar != null) {
             collapsingToolbar.setTitle("تطبيق OneUI");
-            try {
-                collapsingToolbar.seslSetSubtitle("مدعوم بتقنية Samsung");
-                collapsingToolbar.seslEnableFadeToolbarTitle(true);
-            } catch (NoSuchMethodError e) {
-                // إذا لم تكن طرق SESL متاحة، استخدم العادية فقط
-                android.util.Log.w("MainActivity", "SESL methods not available");
-            }
-            
             collapsingToolbar.setCollapsedTitleTextColor(Color.WHITE);
             collapsingToolbar.setExpandedTitleColor(Color.WHITE);
         }
-    }
-
-    private void setupPullToReach() {
-        CoordinatorLayout.LayoutParams params = 
-            (CoordinatorLayout.LayoutParams) appBarLayout.getLayoutParams();
-        AppBarLayout.Behavior behavior = new AppBarLayout.Behavior();
         
-        behavior.setDragCallback(new AppBarLayout.Behavior.DragCallback() {
-            @Override
-            public boolean canDrag(AppBarLayout appBarLayout) {
-                return true;
-            }
-        });
-        
-        params.setBehavior(behavior);
-        appBarLayout.setLayoutParams(params);
-        
-        appBarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
-            float percentage = Math.abs(verticalOffset) / (float) appBarLayout1.getTotalScrollRange();
-            
-            if (percentage == 1.0f) {
-                toolbar.setAlpha(1.0f);
-            } else if (percentage == 0.0f) {
-                toolbar.setAlpha(0.7f);
-            } else {
-                toolbar.setAlpha(0.8f + (percentage * 0.2f));
-            }
-        });
-    }
-
-    private void setupSwipeToRefresh() {
-        swipeRefreshLayout.setColorSchemeColors(
-            ONEUI_BLUE, 
-            Color.parseColor("#4CAF50"), 
-            Color.parseColor("#FF9800")
-        );
-        
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            Toast.makeText(this, "جاري تحديث المحتوى...", Toast.LENGTH_SHORT).show();
-            
-            swipeRefreshLayout.postDelayed(() -> {
-                swipeRefreshLayout.setRefreshing(false);
-                refreshCurrentContent();
-                Toast.makeText(this, "تم التحديث بنجاح!", Toast.LENGTH_SHORT).show();
-            }, 2000);
-        });
-    }
-
-    private void loadDefaultContent() {
-        try {
-            if (contentContainer == null) {
-                Log.w("MainActivity", "contentContainer is null, cannot load content");
-                return;
-            }
-            
-            // مسح أي fragments موجودة
-            clearFragments();
-            contentContainer.removeAllViews();
-            
-            // إنشاء محتوى بسيط مع الأزرار الأساسية
-            LinearLayout mainContent = new LinearLayout(this);
-            mainContent.setOrientation(LinearLayout.VERTICAL);
-            mainContent.setLayoutParams(new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, 
-                ViewGroup.LayoutParams.WRAP_CONTENT));
-            mainContent.setPadding(dpToPx(24), dpToPx(24), dpToPx(24), dpToPx(24));
-            
-            // إضافة العنوان
-            TextView welcomeTitle = new TextView(this);
-            welcomeTitle.setText("مرحباً بك في تطبيق OneUI");
-            welcomeTitle.setTextSize(24);
-            welcomeTitle.setTextColor(ONEUI_BLUE);
-            welcomeTitle.setPadding(0, 0, 0, dpToPx(16));
-            mainContent.addView(welcomeTitle);
-            
-            // إضافة وصف
-            TextView description = new TextView(this);
-            description.setText("تطبيق محسن بتقنية Samsung OneUI مع ميزات متقدمة للتمرير والإعدادات.");
-            description.setTextSize(16);
-            description.setTextColor(Color.DKGRAY);
-            description.setPadding(0, 0, 0, dpToPx(32));
-            description.setLineSpacing(dpToPx(4), 1.2f);
-            mainContent.addView(description);
-            
-            // إضافة الأزرار
-            Button scrollButton = createNavigationButton("قائمة التمرير", "200 عنصر مع تمرير محسن");
-            scrollButton.setOnClickListener(v -> showScrollFragment());
-            mainContent.addView(scrollButton);
-            
-            mainContent.addView(createSpacer(16));
-            
-            Button settingsButton = createNavigationButton("الإعدادات", "تخصيص واجهة التطبيق");
-            settingsButton.setOnClickListener(v -> showSettingsFragment());
-            mainContent.addView(settingsButton);
-            
-            mainContent.addView(createSpacer(16));
-            
-            Button homeButton = createNavigationButton("الصفحة الرئيسية", "العودة للشاشة الرئيسية");
-            homeButton.setOnClickListener(v -> showHomeContent());
-            mainContent.addView(homeButton);
-            
-            contentContainer.addView(mainContent);
-            Log.d("MainActivity", "تم تحميل المحتوى الافتراضي بنجاح");
-            
-        } catch (Exception e) {
-            Log.e("MainActivity", "خطأ في تحميل المحتوى الافتراضي", e);
-            loadFallbackContent();
-        }
-    }
-    
-    private Button createNavigationButton(String title, String subtitle) {
-        Button button = new Button(this);
-        button.setText(title + "\n" + subtitle);
-        button.setLayoutParams(new LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(70)));
-        
-        button.setAllCaps(false);
-        button.setTextSize(15);
-        button.setTextColor(Color.WHITE);
-        button.setBackgroundColor(ONEUI_BLUE);
-        button.setPadding(dpToPx(16), dpToPx(12), dpToPx(16), dpToPx(12));
-        
-        return button;
-    }
-    
-    private void loadFallbackContent() {
-        try {
-            if (contentContainer == null) return;
-            
-            contentContainer.removeAllViews();
-            
-            TextView fallbackText = new TextView(this);
-            fallbackText.setText("تم تحميل التطبيق بنجاح!\n\nالأزرار والميزات التفاعلية متاحة الآن.");
-            fallbackText.setTextSize(18);
-            fallbackText.setPadding(dpToPx(24), dpToPx(24), dpToPx(24), dpToPx(24));
-            fallbackText.setTextColor(Color.DKGRAY);
-            fallbackText.setLayoutParams(new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, 
-                ViewGroup.LayoutParams.WRAP_CONTENT));
-            
-            contentContainer.addView(fallbackText);
-            
-        } catch (Exception e) {
-            Log.e("MainActivity", "فشل حتى في تحميل المحتوى البديل", e);
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setColorSchemeColors(ONEUI_BLUE);
+            swipeRefreshLayout.setOnRefreshListener(() -> {
+                swipeRefreshLayout.postDelayed(() -> {
+                    swipeRefreshLayout.setRefreshing(false);
+                    Toast.makeText(this, "تم التحديث", Toast.LENGTH_SHORT).show();
+                }, 1500);
+            });
         }
     }
 
-    private LinearLayout createNavigationButtons() {
-        LinearLayout buttonContainer = new LinearLayout(this);
-        buttonContainer.setOrientation(LinearLayout.VERTICAL);
-        buttonContainer.setPadding(0, 0, 0, dpToPx(24));
+    private void loadMainContent() {
+        if (contentContainer == null) return;
         
-        Button scrollButton = createStyledButton("قائمة التمرير", "200 عنصر مع تمرير محسن");
-        scrollButton.setOnClickListener(v -> showScrollFragment());
+        contentContainer.removeAllViews();
         
-        Button settingsButton = createStyledButton("الإعدادات", "تخصيص واجهة التطبيق");
-        settingsButton.setOnClickListener(v -> showSettingsFragment());
+        LinearLayout mainLayout = new LinearLayout(this);
+        mainLayout.setOrientation(LinearLayout.VERTICAL);
+        mainLayout.setLayoutParams(new FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, 
+            ViewGroup.LayoutParams.WRAP_CONTENT));
+        mainLayout.setPadding(dpToPx(20), dpToPx(20), dpToPx(20), dpToPx(20));
         
-        Button homeButton = createStyledButton("الصفحة الرئيسية", "العودة للشاشة الرئيسية");
-        homeButton.setOnClickListener(v -> showHomeContent());
+        // العنوان الرئيسي
+        TextView mainTitle = new TextView(this);
+        mainTitle.setText("تطبيق OneUI");
+        mainTitle.setTextSize(28);
+        mainTitle.setTextColor(ONEUI_BLUE);
+        mainTitle.setPadding(0, 0, 0, dpToPx(16));
+        mainLayout.addView(mainTitle);
         
-        buttonContainer.addView(scrollButton);
-        buttonContainer.addView(createSpacer(12));
-        buttonContainer.addView(settingsButton);
-        buttonContainer.addView(createSpacer(12));
-        buttonContainer.addView(homeButton);
+        // الوصف
+        TextView description = new TextView(this);
+        description.setText("تطبيق محسن بتقنية Samsung OneUI مع ميزات متقدمة");
+        description.setTextSize(16);
+        description.setTextColor(Color.DKGRAY);
+        description.setPadding(0, 0, 0, dpToPx(24));
+        mainLayout.addView(description);
         
-        return buttonContainer;
+        // أزرار التنقل
+        Button scrollButton = createActionButton("قائمة التمرير");
+        scrollButton.setOnClickListener(v -> navigateToScrollList());
+        mainLayout.addView(scrollButton);
+        
+        addVerticalSpace(mainLayout, 12);
+        
+        Button settingsButton = createActionButton("الإعدادات");
+        settingsButton.setOnClickListener(v -> navigateToSettings());
+        mainLayout.addView(settingsButton);
+        
+        addVerticalSpace(mainLayout, 12);
+        
+        Button homeButton = createActionButton("الرئيسية");
+        homeButton.setOnClickListener(v -> returnToHome());
+        mainLayout.addView(homeButton);
+        
+        contentContainer.addView(mainLayout);
     }
-
-    private Button createStyledButton(String title, String subtitle) {
+    
+    private Button createActionButton(String text) {
         Button button = new Button(this);
-        button.setText(title + "\n" + subtitle);
+        button.setText(text);
         button.setLayoutParams(new LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(70)));
-        
-        button.setAllCaps(false);
-        button.setTextSize(15);
+            ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(50)));
+        button.setTextSize(16);
         button.setTextColor(Color.WHITE);
         button.setBackgroundColor(ONEUI_BLUE);
-        button.setPadding(dpToPx(16), dpToPx(12), dpToPx(16), dpToPx(12));
-        
+        button.setAllCaps(false);
         return button;
     }
-
-    private TextView createWelcomeText() {
-        TextView welcomeText = new TextView(this);
-        welcomeText.setText(
-            "مرحباً بك في تطبيق OneUI المحسن مع SESL!\n\n" +
-            
-            "ميزة Pull-to-Reach الجديدة:\n" +
-            "اسحب الشاشة لأسفل للوصول السهل للعناصر العلوية\n" +
-            "مثالية للاستخدام بيد واحدة\n" +
-            "تعمل تلقائياً مع الشريط العلوي القابل للطي\n\n" +
-            
-            "الميزات المحسنة مع SESL:\n" +
-            "CollapsingToolbarLayout مع دعم العناوين الفرعية\n" +
-            "تأثير الاختفاء المحسن للعنوان (Fade Effect)\n" +
-            "دعم العناوين المخصصة والموسعة\n" +
-            "تصميم One UI الأصلي من Samsung\n\n" +
-            
-            "الميزات الأخرى:\n" +
-            "السحب لأسفل للتحديث\n" +
-            "تخطيط متقدم باستخدام CoordinatorLayout\n" +
-            "تمرير محسن مع NestedScrollView\n" +
-            "ألوان One UI الأصلية\n" +
-            "دعم كامل لأجهزة Samsung وغير Samsung\n\n" +
-            
-            "استخدم الأزرار أعلاه للتنقل واكتشاف المزيد من الميزات!"
-        );
-                           
-        welcomeText.setTextSize(16);
-        welcomeText.setLineSpacing(dpToPx(4), 1.3f);
-        welcomeText.setPadding(dpToPx(8), dpToPx(16), dpToPx(8), dpToPx(16));
-        welcomeText.setTextColor(Color.DKGRAY);
-        
-        return welcomeText;
-    }
-
-    private android.view.View createSpacer(int dp) {
+    
+    private void addVerticalSpace(LinearLayout parent, int dp) {
         android.view.View spacer = new android.view.View(this);
         spacer.setLayoutParams(new LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(dp)));
-        return spacer;
+        parent.addView(spacer);
     }
-
-    private void showScrollFragment() {
-        collapsingToolbar.setTitle("قائمة التمرير");
-        collapsingToolbar.seslSetSubtitle("عرض محسن للبيانات");
-        replaceFragment(new ScrollFragment());
-        Toast.makeText(this, "تم تحميل قائمة التمرير", Toast.LENGTH_SHORT).show();
+    
+    private void navigateToScrollList() {
+        updateTitle("قائمة التمرير");
+        replaceWithFragment(new ScrollFragment());
+        showToast("تم فتح قائمة التمرير");
     }
-
-    private void showSettingsFragment() {
-        collapsingToolbar.setTitle("إعدادات التطبيق");
-        collapsingToolbar.seslSetSubtitle("تخصيص التطبيق");
-        replaceFragment(new SettingsFragment());
-        Toast.makeText(this, "تم فتح إعدادات التطبيق", Toast.LENGTH_SHORT).show();
+    
+    private void navigateToSettings() {
+        updateTitle("الإعدادات");
+        replaceWithFragment(new SettingsFragment());
+        showToast("تم فتح الإعدادات");
     }
-
-    private void showHomeContent() {
-        collapsingToolbar.setTitle("تطبيق OneUI");
-        collapsingToolbar.seslSetSubtitle("مدعوم بتقنية Samsung");
-        clearFragments();
-        loadDefaultContent();
-        Toast.makeText(this, "مرحباً بعودتك للشاشة الرئيسية", Toast.LENGTH_SHORT).show();
+    
+    private void returnToHome() {
+        updateTitle("تطبيق OneUI");
+        clearCurrentFragment();
+        loadMainContent();
+        showToast("العودة للرئيسية");
     }
-
-    private void replaceFragment(Fragment newFragment) {
-        currentFragment = newFragment;
-        contentContainer.removeAllViews();
+    
+    private void updateTitle(String title) {
+        if (collapsingToolbar != null) {
+            collapsingToolbar.setTitle(title);
+        }
+    }
+    
+    private void replaceWithFragment(Fragment fragment) {
+        if (contentContainer == null) return;
         
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.main_container, newFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
-
-    private void clearFragments() {
-        if (currentFragment != null) {
+        try {
+            currentFragment = fragment;
+            contentContainer.removeAllViews();
+            
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.remove(currentFragment);
+            transaction.replace(R.id.main_container, fragment);
+            transaction.addToBackStack(null);
             transaction.commit();
-            currentFragment = null;
+            
+        } catch (Exception e) {
+            Log.e("MainActivity", "خطأ في تحميل Fragment", e);
+            showToast("خطأ في تحميل المحتوى");
+            returnToHome();
         }
     }
-
-    private void refreshCurrentContent() {
+    
+    private void clearCurrentFragment() {
         if (currentFragment != null) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.detach(currentFragment);
-            transaction.attach(currentFragment);
-            transaction.commit();
-        } else {
-            loadDefaultContent();
+            try {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.remove(currentFragment);
+                transaction.commit();
+                currentFragment = null;
+            } catch (Exception e) {
+                Log.e("MainActivity", "خطأ في إزالة Fragment", e);
+            }
         }
     }
-
+    
+    private void createFallbackInterface() {
+        setContentView(new LinearLayout(this));
+        TextView errorText = new TextView(this);
+        errorText.setText("خطأ في تحميل التطبيق\nتحقق من السجلات للتفاصيل");
+        errorText.setTextSize(18);
+        errorText.setPadding(40, 40, 40, 40);
+        errorText.setTextColor(Color.RED);
+        ((LinearLayout) findViewById(android.R.id.content)).addView(errorText);
+    }
+    
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+    
     private int dpToPx(int dp) {
         float density = getResources().getDisplayMetrics().density;
         return Math.round(dp * density);
@@ -380,31 +237,9 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
             getSupportFragmentManager().popBackStack();
-            collapsingToolbar.setTitle("تطبيق OneUI");
-            collapsingToolbar.seslSetSubtitle("مدعوم بتقنية Samsung");
-            loadDefaultContent();
+            returnToHome();
         } else {
             super.onBackPressed();
         }
     }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("toolbar_title", collapsingToolbar.getTitle().toString());
-        if (collapsingToolbar.getSubTitle() != null) {
-            outState.putString("toolbar_subtitle", collapsingToolbar.getSubTitle().toString());
-        }
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        if (savedInstanceState != null) {
-            String toolbarTitle = savedInstanceState.getString("toolbar_title", "تطبيق OneUI");
-            String toolbarSubtitle = savedInstanceState.getString("toolbar_subtitle", "مدعوم بتقنية Samsung");
-            collapsingToolbar.setTitle(toolbarTitle);
-            collapsingToolbar.seslSetSubtitle(toolbarSubtitle);
-        }
-    }
-                                                  }
+                               }
