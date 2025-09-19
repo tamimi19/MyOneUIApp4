@@ -322,4 +322,4 @@ public class MainActivity extends AppCompatActivity {
             collapsingToolbar.seslSetSubtitle(toolbarSubtitle);
         }
     }
-}
+                                   }
