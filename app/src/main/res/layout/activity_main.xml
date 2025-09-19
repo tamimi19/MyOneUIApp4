@@ -41,6 +41,8 @@
                     app:title="تطبيق One UI"
                     app:subtitle="مدعوم بتقنية Samsung"
                     app:extendedTitleEnabled="true"
+                    app:extendedTitleTextAppearance="@android:style/TextAppearance.Material.Display1"
+                    app:extendedSubtitleTextAppearance="@android:style/TextAppearance.Material.Subhead"
                     app:contentScrim="@color/colorPrimary"
                     app:statusBarScrim="@color/colorPrimaryDark">
 
