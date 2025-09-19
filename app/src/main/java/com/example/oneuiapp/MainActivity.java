@@ -2,6 +2,7 @@ package com.example.oneuiapp;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Button;
@@ -322,4 +323,4 @@ public class MainActivity extends AppCompatActivity {
             collapsingToolbar.seslSetSubtitle(toolbarSubtitle);
         }
     }
-                                   }
+                               }
