@@ -114,34 +114,31 @@
                                 android:textAppearance="@android:style/TextAppearance.Material.Headline"
                                 android:layout_marginBottom="16dp" />
 
-                            <com.google.android.material.button.MaterialButton
+                            <Button
                                 android:id="@+id/btn_primary_action"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="12dp"
                                 android:text="الإجراء الأساسي"
                                 android:textSize="16sp"
-                                android:minHeight="48dp"
-                                style="@style/Widget.MaterialComponents.Button" />
+                                android:minHeight="48dp" />
 
-                            <com.google.android.material.button.MaterialButton
+                            <Button
                                 android:id="@+id/btn_secondary_action"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="12dp"
                                 android:text="إجراء ثانوي"
                                 android:textSize="16sp"
-                                android:minHeight="48dp"
-                                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                                android:minHeight="48dp" />
 
-                            <com.google.android.material.button.MaterialButton
+                            <Button
                                 android:id="@+id/btn_settings"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="الإعدادات"
                                 android:textSize="16sp"
-                                android:minHeight="48dp"
-                                style="@style/Widget.MaterialComponents.Button.TextButton" />
+                                android:minHeight="48dp" />
 
                         </LinearLayout>
 
