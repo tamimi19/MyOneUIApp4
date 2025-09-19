@@ -148,35 +148,74 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             
+            // مسح أي fragments موجودة
+            clearFragments();
             contentContainer.removeAllViews();
             
+            // إنشاء محتوى بسيط مع الأزرار الأساسية
             LinearLayout mainContent = new LinearLayout(this);
             mainContent.setOrientation(LinearLayout.VERTICAL);
             mainContent.setLayoutParams(new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 
                 ViewGroup.LayoutParams.WRAP_CONTENT));
-            mainContent.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
+            mainContent.setPadding(dpToPx(24), dpToPx(24), dpToPx(24), dpToPx(24));
             
-            // إضافة النص الترحيبي
-            TextView welcomeText = createWelcomeText();
-            mainContent.addView(welcomeText);
+            // إضافة العنوان
+            TextView welcomeTitle = new TextView(this);
+            welcomeTitle.setText("مرحباً بك في تطبيق OneUI");
+            welcomeTitle.setTextSize(24);
+            welcomeTitle.setTextColor(ONEUI_BLUE);
+            welcomeTitle.setPadding(0, 0, 0, dpToPx(16));
+            mainContent.addView(welcomeTitle);
             
-            // إضافة مساحة
-            mainContent.addView(createSpacer(24));
+            // إضافة وصف
+            TextView description = new TextView(this);
+            description.setText("تطبيق محسن بتقنية Samsung OneUI مع ميزات متقدمة للتمرير والإعدادات.");
+            description.setTextSize(16);
+            description.setTextColor(Color.DKGRAY);
+            description.setPadding(0, 0, 0, dpToPx(32));
+            description.setLineSpacing(dpToPx(4), 1.2f);
+            mainContent.addView(description);
             
             // إضافة الأزرار
-            LinearLayout buttonContainer = createNavigationButtons();
-            mainContent.addView(buttonContainer);
+            Button scrollButton = createNavigationButton("قائمة التمرير", "200 عنصر مع تمرير محسن");
+            scrollButton.setOnClickListener(v -> showScrollFragment());
+            mainContent.addView(scrollButton);
+            
+            mainContent.addView(createSpacer(16));
+            
+            Button settingsButton = createNavigationButton("الإعدادات", "تخصيص واجهة التطبيق");
+            settingsButton.setOnClickListener(v -> showSettingsFragment());
+            mainContent.addView(settingsButton);
+            
+            mainContent.addView(createSpacer(16));
+            
+            Button homeButton = createNavigationButton("الصفحة الرئيسية", "العودة للشاشة الرئيسية");
+            homeButton.setOnClickListener(v -> showHomeContent());
+            mainContent.addView(homeButton);
             
             contentContainer.addView(mainContent);
-            
             Log.d("MainActivity", "تم تحميل المحتوى الافتراضي بنجاح");
             
         } catch (Exception e) {
             Log.e("MainActivity", "خطأ في تحميل المحتوى الافتراضي", e);
-            // في حالة فشل تحميل المحتوى المعقد، اعرض محتوى بسيط
             loadFallbackContent();
         }
+    }
+    
+    private Button createNavigationButton(String title, String subtitle) {
+        Button button = new Button(this);
+        button.setText(title + "\n" + subtitle);
+        button.setLayoutParams(new LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(70)));
+        
+        button.setAllCaps(false);
+        button.setTextSize(15);
+        button.setTextColor(Color.WHITE);
+        button.setBackgroundColor(ONEUI_BLUE);
+        button.setPadding(dpToPx(16), dpToPx(12), dpToPx(16), dpToPx(12));
+        
+        return button;
     }
     
     private void loadFallbackContent() {
@@ -368,4 +407,4 @@ public class MainActivity extends AppCompatActivity {
             collapsingToolbar.seslSetSubtitle(toolbarSubtitle);
         }
     }
-                                 }
+                                                  }
