@@ -50,7 +50,7 @@
                     android:layout_height="?attr/actionBarSize"
                     app:layout_collapseMode="pin"
                     app:popupTheme="@style/Widget.Design.AppBarLayout"
-                    app:navigationIcon="@drawable/ic_oui_menu"
+                    app:navigationIcon="@drawable/ic_menu_white_24dp"
                     app:titleTextAppearance="@android:style/TextAppearance.Material.Widget.Toolbar.Title" />
 
             </com.google.android.material.appbar.CollapsingToolbarLayout>
