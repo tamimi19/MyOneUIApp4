@@ -8,147 +8,164 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:layout_height="match_parent">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/app_bar"
-            android:layout_width="match_parent"
-            android:layout_height="320dp"
-            android:fitsSystemWindows="true"
-            style="@style/Widget.Design.AppBarLayout">
-
-            <com.google.android.material.appbar.CollapsingToolbarLayout
-                android:id="@+id/toolbar_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fitsSystemWindows="true"
-                style="@style/Widget.Design.CollapsingToolbar"
-                app:collapsedTitleTextAppearance="@android:style/TextAppearance.Material.Widget.Toolbar.Title"
-                app:expandedTitleTextAppearance="@android:style/TextAppearance.Material.Display1"
-                app:expandedTitleMarginStart="24dp"
-                app:expandedTitleMarginTop="64dp"
-                app:expandedTitleMarginBottom="64dp"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-                app:toolbarId="@+id/toolbar"
-                app:title="تطبيق One UI"
-                app:contentScrim="@color/colorPrimary"
-                app:statusBarScrim="@color/colorPrimaryDark">
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/colorPrimary"
-                    app:layout_collapseMode="parallax"
-                    app:layout_collapseParallaxMultiplier="0.5" />
-
-                <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    app:layout_collapseMode="pin"
-                    app:popupTheme="@style/Widget.Design.AppBarLayout"
-                    app:navigationIcon="@drawable/ic_oui_settings_outline"
-                    app:titleTextAppearance="@android:style/TextAppearance.Material.Widget.Toolbar.Title" />
-
-            </com.google.android.material.appbar.CollapsingToolbarLayout>
-        </com.google.android.material.appbar.AppBarLayout>
-
-        <androidx.core.widget.NestedScrollView
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:fitsSystemWindows="true">
 
-            <LinearLayout
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/app_bar"
                 android:layout_width="match_parent"
+                android:layout_height="320dp"
+                android:fitsSystemWindows="true"
+                style="@style/Widget.Design.AppBarLayout">
+
+                <com.google.android.material.appbar.CollapsingToolbarLayout
+                    android:id="@+id/collapsing_toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fitsSystemWindows="true"
+                    style="@style/Widget.Design.CollapsingToolbar"
+                    app:collapsedTitleTextAppearance="@android:style/TextAppearance.Material.Widget.Toolbar.Title"
+                    app:expandedTitleTextAppearance="@android:style/TextAppearance.Material.Display1"
+                    app:expandedTitleMarginStart="24dp"
+                    app:expandedTitleMarginTop="64dp"
+                    app:expandedTitleMarginBottom="64dp"
+                    app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+                    app:toolbarId="@+id/toolbar"
+                    app:title="تطبيق One UI"
+                    app:subtitle="مدعوم بتقنية Samsung"
+                    app:extendedTitleEnabled="true"
+                    app:contentScrim="@color/colorPrimary"
+                    app:statusBarScrim="@color/colorPrimaryDark">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/colorPrimary"
+                        app:layout_collapseMode="parallax"
+                        app:layout_collapseParallaxMultiplier="0.5" />
+
+                    <androidx.appcompat.widget.Toolbar
+                        android:id="@+id/toolbar"
+                        android:layout_width="match_parent"
+                        android:layout_height="?attr/actionBarSize"
+                        app:layout_collapseMode="pin"
+                        app:popupTheme="@style/Widget.Design.AppBarLayout"
+                        app:navigationIcon="@drawable/ic_oui_settings_outline"
+                        app:titleTextAppearance="@android:style/TextAppearance.Material.Widget.Toolbar.Title" />
+
+                </com.google.android.material.appbar.CollapsingToolbarLayout>
+            </com.google.android.material.appbar.AppBarLayout>
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/nested_scroll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+                <FrameLayout
+                    android:id="@+id/main_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="24dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="معلومات التطبيق"
+                            android:textAppearance="@android:style/TextAppearance.Material.Headline"
+                            android:layout_marginBottom="16dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="هذا النص مخصص للعرض والقراءة فقط. يمكن للمستخدم تصفحه بسهولة عن طريق التمرير."
+                            android:textAppearance="@android:style/TextAppearance.Material.Body1"
+                            android:layout_marginBottom="24dp"
+                            android:lineSpacingExtra="4dp" />
+
+                        <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginTop="32dp">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="الإجراءات الرئيسية"
+                                android:textAppearance="@android:style/TextAppearance.Material.Headline"
+                                android:layout_marginBottom="16dp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_primary_action"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="12dp"
+                                android:text="الإجراء الأساسي"
+                                android:textSize="16sp"
+                                android:minHeight="48dp"
+                                style="@style/Widget.MaterialComponents.Button" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_secondary_action"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="12dp"
+                                android:text="إجراء ثانوي"
+                                android:textSize="16sp"
+                                android:minHeight="48dp"
+                                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_settings"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="الإعدادات"
+                                android:textSize="16sp"
+                                android:minHeight="48dp"
+                                style="@style/Widget.MaterialComponents.Button.TextButton" />
+
+                        </LinearLayout>
+
+                        <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="80dp" />
+
+                    </LinearLayout>
+
+                </FrameLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="24dp">
+                android:layout_gravity="bottom|end"
+                android:layout_margin="24dp"
+                app:srcCompat="@drawable/ic_oui_drawer"
+                app:elevation="6dp"
+                app:fabSize="normal" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="معلومات التطبيق"
-                    android:textAppearance="@android:style/TextAppearance.Material.Headline"
-                    android:layout_marginBottom="16dp" />
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="هذا النص مخصص للعرض والقراءة فقط. يمكن للمستخدم تصفحه بسهولة عن طريق التمرير."
-                    android:textAppearance="@android:style/TextAppearance.Material.Body1"
-                    android:layout_marginBottom="24dp"
-                    android:lineSpacingExtra="4dp" />
-
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="32dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="الإجراءات الرئيسية"
-                        android:textAppearance="@android:style/TextAppearance.Material.Headline"
-                        android:layout_marginBottom="16dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_primary_action"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"
-                        android:text="الإجراء الأساسي"
-                        android:textSize="16sp"
-                        android:minHeight="48dp"
-                        style="@style/Widget.MaterialComponents.Button" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_secondary_action"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"
-                        android:text="إجراء ثانوي"
-                        android:textSize="16sp"
-                        android:minHeight="48dp"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_settings"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="الإعدادات"
-                        android:textSize="16sp"
-                        android:minHeight="48dp"
-                        style="@style/Widget.MaterialComponents.Button.TextButton" />
-
-                </LinearLayout>
-
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="80dp" />
-
-            </LinearLayout>
-
-        </androidx.core.widget.NestedScrollView>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="24dp"
-            app:srcCompat="@drawable/ic_oui_drawer"
-            app:elevation="6dp"
-            app:fabSize="normal" />
-
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
