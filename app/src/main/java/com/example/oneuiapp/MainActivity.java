@@ -40,13 +40,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // تهيئة معالج الأخطاء قبل أي شيء آخر
+        CrashHandler.initialize(this);
+        
+        // تنظيف السجلات القديمة
+        CrashHandler.cleanOldLogs(this);
+        
         setContentView(R.layout.activity_main);
         
-        initViews();
-        setupToolbar();
-        setupPullToReach();
-        setupSwipeToRefresh();
-        loadDefaultContent();
+        try {
+            initViews();
+            setupToolbar();
+            setupPullToReach();
+            setupSwipeToRefresh();
+            loadDefaultContent();
+        } catch (Exception e) {
+            Log.e("MainActivity", "خطأ في onCreate", e);
+            // في حالة حدوث خطأ، اعرض رسالة وأغلق بأمان
+            Toast.makeText(this, "خطأ في تهيئة التطبيق، تحقق من السجلات", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void initViews() {
