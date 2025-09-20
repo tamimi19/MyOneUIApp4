@@ -27,7 +27,7 @@
                 android:fitsSystemWindows="true"
                 app:contentScrim="?attr/colorPrimary"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
-                app:statusBarScrim="transparent"
+                app:statusBarScrim="?attr/colorPrimaryVariant"
                 app:title="تطبيق OneUI">
 
                 <ImageView
