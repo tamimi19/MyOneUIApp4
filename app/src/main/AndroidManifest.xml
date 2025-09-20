@@ -9,6 +9,7 @@
     <application
         android:allowBackup="true"
         android:label="تطبيق OneUI"
+        android:theme="@style/OneUITheme"
         android:requestLegacyExternalStorage="true"
         tools:targetApi="31">
 
