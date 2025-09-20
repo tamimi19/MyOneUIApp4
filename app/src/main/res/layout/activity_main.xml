@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dev.oneuiproject.oneui.layout.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
@@ -11,44 +11,45 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
 
-        <dev.oneuiproject.oneui.layout.AppBarLayout
+        <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/app_bar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/sesl_appbar_height_proportion"
+            android:layout_height="240dp"
             android:fitsSystemWindows="true">
 
-            <dev.oneuiproject.oneui.layout.ToolbarLayout
+            <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"
                 app:title="تطبيق OneUI"
-                app:expandedTitleMarginBottom="@dimen/sesl_appbar_extended_title_padding"
-                app:expandedTitleMarginStart="@dimen/sesl_appbar_extended_title_padding">
+                app:expandedTitleMarginBottom="16dp"
+                app:expandedTitleMarginStart="16dp"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-                <dev.oneuiproject.oneui.widget.Toolbar
+                <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize" />
+                    android:layout_height="?attr/actionBarSize"
+                    app:layout_collapseMode="pin" />
 
-            </dev.oneuiproject.oneui.layout.ToolbarLayout>
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
 
-        </dev.oneuiproject.oneui.layout.AppBarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nested_scroll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/sesl_appbar_scrolling_view_behavior">
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <dev.oneuiproject.oneui.layout.RoundLinearLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginStart="@dimen/sesl_round_and_bgcolor_show_button_shape_padding_horizontal"
-                android:layout_marginEnd="@dimen/sesl_round_and_bgcolor_show_button_shape_padding_horizontal"
-                android:layout_marginTop="@dimen/sesl_round_and_bgcolor_show_button_shape_padding_vertical"
-                android:layout_marginBottom="@dimen/sesl_round_and_bgcolor_show_button_shape_padding_vertical">
+                android:layout_margin="16dp"
+                android:background="?attr/colorSurface"
+                android:padding="16dp">
 
                 <FrameLayout
                     android:id="@+id/main_container"
@@ -60,73 +61,71 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="@dimen/sesl_list_preferred_item_padding_horizontal">
+                        android:padding="16dp">
 
-                        <dev.oneuiproject.oneui.widget.TextView
+                        <TextView
                             android:id="@+id/welcome_title"
-                            style="@style/OneUITextAppearance.Display1"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/sesl_list_subheader_padding_vertical"
+                            android:layout_marginBottom="16dp"
                             android:text="مرحباً بك في تطبيق OneUI"
-                            android:textAlignment="center" />
+                            android:textAlignment="center"
+                            android:textAppearance="?attr/textAppearanceHeadline4" />
 
-                        <dev.oneuiproject.oneui.widget.TextView
+                        <TextView
                             android:id="@+id/welcome_subtitle"
-                            style="@style/OneUITextAppearance.Body1"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/sesl_list_preferred_item_padding_vertical"
+                            android:layout_marginBottom="24dp"
                             android:text="تطبيق محسن باستخدام مكتبات Samsung OneUI الأصلية"
-                            android:textAlignment="center" />
+                            android:textAlignment="center"
+                            android:textAppearance="?attr/textAppearanceBody1" />
 
-                        <dev.oneuiproject.oneui.widget.Button
+                        <Button
                             android:id="@+id/btn_scroll_list"
-                            style="@style/OneUIWidget.Button.Colored"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/sesl_list_preferred_item_padding_vertical"
+                            android:layout_marginBottom="16dp"
                             android:text="📋 قائمة التمرير\nعرض 200 عنصر مع تمرير محسن"
                             android:textAllCaps="false" />
 
-                        <dev.oneuiproject.oneui.widget.Button
+                        <Button
                             android:id="@+id/btn_settings"
-                            style="@style/OneUIWidget.Button.Colored"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/sesl_list_preferred_item_padding_vertical"
+                            android:layout_marginBottom="16dp"
                             android:text="⚙️ الإعدادات\nتخصيص واجهة التطبيق"
                             android:textAllCaps="false" />
 
-                        <dev.oneuiproject.oneui.widget.Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btn_home"
-                            style="@style/OneUIWidget.Button.Borderless"
+                            style="@style/Widget.Material3.Button.TextButton"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/sesl_list_preferred_item_padding_vertical"
+                            android:layout_marginBottom="16dp"
                             android:text="🏠 الرئيسية\nالعودة للشاشة الرئيسية"
                             android:textAllCaps="false" />
 
-                        <dev.oneuiproject.oneui.widget.TextView
-                            style="@style/OneUITextAppearance.Headline6"
+                        <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/sesl_list_preferred_item_padding_vertical"
-                            android:layout_marginBottom="@dimen/sesl_list_subheader_padding_vertical"
-                            android:text="ميزات التطبيق:" />
+                            android:layout_marginTop="16dp"
+                            android:layout_marginBottom="8dp"
+                            android:text="ميزات التطبيق:"
+                            android:textAppearance="?attr/textAppearanceHeadline6" />
 
-                        <dev.oneuiproject.oneui.widget.TextView
-                            style="@style/OneUITextAppearance.Body2"
+                        <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="• واجهة مستخدم محسنة بتقنية Samsung OneUI\n• قائمة تمرير متقدمة مع 200 عنصر\n• إعدادات شاملة للتخصيص\n• تسجيل تلقائي للأخطاء\n• تصميم متجاوب يدعم جميع أحجام الشاشات\n• دعم كامل لأجهزة Samsung وغير Samsung" />
+                            android:text="• واجهة مستخدم محسنة بتقنية Samsung OneUI\n• قائمة تمرير متقدمة مع 200 عنصر\n• إعدادات شاملة للتخصيص\n• تسجيل تلقائي للأخطاء\n• تصميم متجاوب يدعم جميع أحجام الشاشات\n• دعم كامل لأجهزة Samsung وغير Samsung"
+                            android:textAppearance="?attr/textAppearanceBody2" />
 
-                        <dev.oneuiproject.oneui.widget.Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btn_test_features"
-                            style="@style/OneUIWidget.Button.Outlined"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/sesl_list_preferred_item_padding_vertical"
+                            android:layout_marginTop="16dp"
                             android:text="اختبار الميزات المتقدمة"
                             android:textAllCaps="false" />
 
@@ -134,7 +133,7 @@
 
                 </FrameLayout>
 
-            </dev.oneuiproject.oneui.layout.RoundLinearLayout>
+            </LinearLayout>
 
         </androidx.core.widget.NestedScrollView>
 
