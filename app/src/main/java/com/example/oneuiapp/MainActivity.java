@@ -2,45 +2,68 @@ package com.example.oneuiapp;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
-import android.widget.LinearLayout;
-import android.widget.Button;
-import android.view.ViewGroup;
+import android.view.View;
 import android.widget.Toast;
-import android.graphics.Color;
+import android.widget.FrameLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 /**
- * MainActivity مبسطة للغاية لتشخيص مشاكل الإغلاق الإجباري
- * تحتوي فقط على الحد الأدنى المطلوب للعمل
+ * MainActivity محدثة للعمل مع التخطيط الأساسي الجديد
+ * تتضمن جميع الوظائف المطلوبة مع واجهة مستقرة
  */
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
+    // العناصر الأساسية من XML
+    private TextView toolbarTitle;
+    private FrameLayout contentContainer;
+    private ScrollView homeContent;
+    private Button btnScrollList;
+    private Button btnSettings;
+    private Button btnHome;
+    private Button btnTestFeatures;
+
+    // Fragment الحالي
+    private Fragment currentFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        Log.d(TAG, "بدء تهيئة التطبيق");
+        Log.d(TAG, "بدء تهيئة التطبيق مع التخطيط الجديد");
         
         try {
-            // محاولة تهيئة معالج الأخطاء
+            // تهيئة معالج الأخطاء
             initializeCrashHandler();
             
-            // إنشاء واجهة مبسطة برمجياً
-            createSimpleInterface();
+            // تحميل التخطيط
+            setContentView(R.layout.activity_main);
+            
+            // تهيئة العناصر
+            initializeViews();
+            
+            // إعداد المستمعات
+            setupEventListeners();
+            
+            // عرض المحتوى الرئيسي افتراضياً
+            showHomeContent();
             
             Log.d(TAG, "تم تهيئة التطبيق بنجاح");
             
         } catch (Exception e) {
             Log.e(TAG, "خطأ فادح في التهيئة", e);
-            createEmergencyInterface();
+            showErrorToast("فشل في تحميل التطبيق: " + e.getMessage());
         }
     }
 
     /**
-     * تهيئة معالج الأخطاء مع معالجة الأخطاء
+     * تهيئة معالج الأخطاء
      */
     private void initializeCrashHandler() {
         try {
@@ -48,156 +71,296 @@ public class MainActivity extends AppCompatActivity {
             CrashHandler.cleanOldLogs(this);
             Log.d(TAG, "تم تهيئة معالج الأخطاء بنجاح");
         } catch (Exception e) {
-            Log.w(TAG, "فشل في تهيئة معالج الأخطاء، متابعة بدونه", e);
+            Log.w(TAG, "تحذير: فشل في تهيئة معالج الأخطاء", e);
         }
     }
 
     /**
-     * إنشاء واجهة مبسطة برمجياً
+     * تهيئة جميع العناصر من XML
      */
-    private void createSimpleInterface() {
-        // إنشاء التخطيط الأساسي
-        LinearLayout mainLayout = new LinearLayout(this);
-        mainLayout.setOrientation(LinearLayout.VERTICAL);
-        mainLayout.setPadding(40, 100, 40, 100);
-        mainLayout.setBackgroundColor(Color.WHITE);
-        
-        // العنوان الرئيسي
-        TextView titleView = createTextView("تطبيق OneUI", 24, Color.parseColor("#1976D2"));
-        titleView.setTextAlignment(TextView.TEXT_ALIGNMENT_CENTER);
-        titleView.setPadding(0, 0, 0, 40);
-        mainLayout.addView(titleView);
-        
-        // رسالة النجاح
-        TextView successView = createTextView("تم تشغيل التطبيق بنجاح!", 18, Color.parseColor("#4CAF50"));
-        successView.setTextAlignment(TextView.TEXT_ALIGNMENT_CENTER);
-        successView.setPadding(0, 0, 0, 40);
-        mainLayout.addView(successView);
-        
-        // زر اختبار
-        Button testButton = createButton("اختبار العمل");
-        testButton.setOnClickListener(v -> {
-            Toast.makeText(this, "التطبيق يعمل بشكل طبيعي!", Toast.LENGTH_LONG).show();
-            Log.d(TAG, "تم النقر على زر الاختبار");
-        });
-        mainLayout.addView(testButton);
-        
-        // زر تجربة XML Layout
-        Button xmlTestButton = createButton("تجربة XML Layout");
-        xmlTestButton.setOnClickListener(v -> testXmlLayout());
-        mainLayout.addView(xmlTestButton);
-        
-        // تعيين التخطيط كمحتوى رئيسي
-        setContentView(mainLayout);
-        
-        Log.d(TAG, "تم إنشاء الواجهة المبسطة بنجاح");
-    }
+    private void initializeViews() {
+        toolbarTitle = findViewById(R.id.toolbar_title);
+        contentContainer = findViewById(R.id.main_container);
+        homeContent = findViewById(R.id.home_content);
+        btnScrollList = findViewById(R.id.btn_scroll_list);
+        btnSettings = findViewById(R.id.btn_settings);
+        btnHome = findViewById(R.id.btn_home);
+        btnTestFeatures = findViewById(R.id.btn_test_features);
 
-    /**
-     * اختبار تحميل XML Layout
-     */
-    private void testXmlLayout() {
-        try {
-            setContentView(R.layout.activity_main);
-            Toast.makeText(this, "تم تحميل XML Layout بنجاح!", Toast.LENGTH_LONG).show();
-            Log.d(TAG, "تم تحميل XML Layout بنجاح");
-        } catch (Exception e) {
-            Log.e(TAG, "فشل في تحميل XML Layout", e);
-            Toast.makeText(this, "فشل في تحميل XML Layout: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            
-            // العودة للواجهة المبسطة
-            createSimpleInterface();
+        // التحقق من وجود العناصر الأساسية
+        if (contentContainer == null) {
+            throw new RuntimeException("لم يتم العثور على main_container");
         }
+
+        Log.d(TAG, "تم تهيئة جميع العناصر بنجاح");
     }
 
     /**
-     * إنشاء TextView مخصص
+     * إعداد مستمعات الأحداث للأزرار
      */
-    private TextView createTextView(String text, int textSize, int textColor) {
-        TextView textView = new TextView(this);
-        textView.setText(text);
-        textView.setTextSize(textSize);
-        textView.setTextColor(textColor);
-        textView.setLayoutParams(new LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT));
-        return textView;
+    private void setupEventListeners() {
+        if (btnScrollList != null) {
+            btnScrollList.setOnClickListener(v -> navigateToScrollFragment());
+        }
+
+        if (btnSettings != null) {
+            btnSettings.setOnClickListener(v -> navigateToSettingsFragment());
+        }
+
+        if (btnHome != null) {
+            btnHome.setOnClickListener(v -> showHomeContent());
+        }
+
+        if (btnTestFeatures != null) {
+            btnTestFeatures.setOnClickListener(v -> testAdvancedFeatures());
+        }
+
+        Log.d(TAG, "تم إعداد مستمعات الأحداث بنجاح");
     }
 
     /**
-     * إنشاء Button مخصص
+     * عرض المحتوى الرئيسي
      */
-    private Button createButton(String text) {
-        Button button = new Button(this);
-        button.setText(text);
-        button.setTextSize(16);
-        button.setTextColor(Color.WHITE);
-        button.setBackgroundColor(Color.parseColor("#1976D2"));
-        button.setAllCaps(false);
-        button.setPadding(32, 24, 32, 24);
-        
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0, 0, 0, 20);
-        button.setLayoutParams(params);
-        
-        return button;
-    }
-
-    /**
-     * إنشاء واجهة طوارئ في حالة الفشل الكامل
-     */
-    private void createEmergencyInterface() {
+    private void showHomeContent() {
         try {
-            LinearLayout emergencyLayout = new LinearLayout(this);
-            emergencyLayout.setOrientation(LinearLayout.VERTICAL);
-            emergencyLayout.setBackgroundColor(Color.WHITE);
-            emergencyLayout.setPadding(40, 100, 40, 100);
+            updateToolbarTitle("تطبيق OneUI");
             
-            TextView errorText = new TextView(this);
-            errorText.setText("حدث خطأ في التطبيق\n\nيرجى التحقق من السجلات");
-            errorText.setTextSize(18);
-            errorText.setTextColor(Color.RED);
-            errorText.setTextAlignment(TextView.TEXT_ALIGNMENT_CENTER);
+            // مسح Fragment الحالي
+            clearCurrentFragment();
             
-            emergencyLayout.addView(errorText);
-            setContentView(emergencyLayout);
+            // إظهار المحتوى الرئيسي
+            if (homeContent != null) {
+                homeContent.setVisibility(View.VISIBLE);
+            }
             
-            Log.d(TAG, "تم إنشاء واجهة الطوارئ");
+            showSuccessToast("تم الرجوع للشاشة الرئيسية");
+            Log.d(TAG, "تم عرض المحتوى الرئيسي بنجاح");
             
         } catch (Exception e) {
-            Log.e(TAG, "فشل حتى في إنشاء واجهة الطوارئ!", e);
+            Log.e(TAG, "خطأ في عرض المحتوى الرئيسي", e);
+            showErrorToast("فشل في عرض المحتوى الرئيسي");
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d(TAG, "onStart تم استدعاؤها");
+    /**
+     * التنقل إلى قائمة التمرير
+     */
+    private void navigateToScrollFragment() {
+        try {
+            updateToolbarTitle("قائمة التمرير");
+            loadFragment(new ScrollFragment(), "ScrollFragment");
+            showSuccessToast("تم تحميل قائمة التمرير مع 200 عنصر");
+            
+        } catch (Exception e) {
+            Log.e(TAG, "خطأ في تحميل قائمة التمرير", e);
+            showErrorToast("فشل في تحميل قائمة التمرير");
+        }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume تم استدعاؤها");
+    /**
+     * التنقل إلى الإعدادات
+     */
+    private void navigateToSettingsFragment() {
+        try {
+            updateToolbarTitle("إعدادات التطبيق");
+            loadFragment(new SettingsFragment(), "SettingsFragment");
+            showSuccessToast("تم فتح إعدادات التطبيق");
+            
+        } catch (Exception e) {
+            Log.e(TAG, "خطأ في تحميل الإعدادات", e);
+            showErrorToast("فشل في تحميل الإعدادات");
+        }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.d(TAG, "onPause تم استدعاؤها");
+    /**
+     * اختبار الميزات المتقدمة
+     */
+    private void testAdvancedFeatures() {
+        try {
+            // إنشاء نافذة حوار لعرض معلومات التطبيق
+            new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle("الميزات المتقدمة")
+                    .setMessage("التطبيق يتضمن الميزات التالية:\n\n" +
+                            "✓ نظام تسجيل أخطاء متطور\n" +
+                            "✓ واجهة متوافقة مع OneUI\n" +
+                            "✓ إدارة ذكية للـ Fragments\n" +
+                            "✓ تخطيط متجاوب للشاشات\n" +
+                            "✓ معالجة شاملة للأخطاء\n\n" +
+                            "جميع الميزات تعمل بشكل مستقل ومتوافق مع أجهزة Samsung وغيرها.")
+                    .setPositiveButton("رائع!", null)
+                    .setNeutralButton("معلومات التطبيق", (dialog, which) -> showAppInfo())
+                    .show();
+                    
+            Log.d(TAG, "تم عرض معلومات الميزات المتقدمة");
+            
+        } catch (Exception e) {
+            Log.e(TAG, "خطأ في عرض الميزات المتقدمة", e);
+            showErrorToast("فشل في عرض المعلومات");
+        }
     }
 
+    /**
+     * عرض معلومات التطبيق
+     */
+    private void showAppInfo() {
+        try {
+            new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle("معلومات التطبيق")
+                    .setMessage("اسم التطبيق: تطبيق OneUI\n" +
+                            "الإصدار: 1.0\n" +
+                            "النظام: Android " + android.os.Build.VERSION.RELEASE + "\n" +
+                            "الجهاز: " + android.os.Build.MODEL + "\n" +
+                            "المطور: فريق التطوير\n\n" +
+                            "تم تطوير التطبيق باستخدام مكتبات Samsung OneUI الرسمية لضمان أفضل تجربة مستخدم.")
+                    .setPositiveButton("موافق", null)
+                    .show();
+                    
+        } catch (Exception e) {
+            Log.e(TAG, "خطأ في عرض معلومات التطبيق", e);
+            showErrorToast("فشل في عرض معلومات التطبيق");
+        }
+    }
+
+    /**
+     * تحميل Fragment مع معالجة الأخطاء
+     */
+    private void loadFragment(Fragment fragment, String fragmentName) {
+        if (contentContainer == null) {
+            throw new RuntimeException("contentContainer غير متاح");
+        }
+
+        try {
+            // إخفاء المحتوى الرئيسي
+            if (homeContent != null) {
+                homeContent.setVisibility(View.GONE);
+            }
+
+            // تحميل Fragment الجديد
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.main_container, fragment);
+            transaction.addToBackStack(fragmentName);
+            transaction.commit();
+
+            currentFragment = fragment;
+
+            Log.d(TAG, "تم تحميل " + fragmentName + " بنجاح");
+
+        } catch (Exception e) {
+            Log.e(TAG, "خطأ في تحميل " + fragmentName, e);
+            // في حالة فشل تحميل Fragment، العودة للمحتوى الرئيسي
+            showHomeContent();
+            throw e;
+        }
+    }
+
+    /**
+     * مسح Fragment الحالي
+     */
+    private void clearCurrentFragment() {
+        if (currentFragment != null) {
+            try {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.remove(currentFragment);
+                transaction.commit();
+                currentFragment = null;
+                
+                Log.d(TAG, "تم مسح Fragment السابق");
+                
+            } catch (Exception e) {
+                Log.w(TAG, "تحذير: مشكلة في إزالة Fragment", e);
+            }
+        }
+    }
+
+    /**
+     * تحديث عنوان شريط الأدوات
+     */
+    private void updateToolbarTitle(String title) {
+        if (toolbarTitle != null) {
+            toolbarTitle.setText(title);
+        }
+    }
+
+    /**
+     * عرض رسالة نجاح
+     */
+    private void showSuccessToast(String message) {
+        Toast.makeText(this, "✓ " + message, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * عرض رسالة خطأ
+     */
+    private void showErrorToast(String message) {
+        Toast.makeText(this, "⚠ " + message, Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * معالجة زر الرجوع
+     */
     @Override
-    protected void onStop() {
-        super.onStop();
-        Log.d(TAG, "onStop تم استدعاؤها");
+    public void onBackPressed() {
+        try {
+            if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                getSupportFragmentManager().popBackStack();
+                showHomeContent();
+            } else {
+                // تأكيد الخروج من التطبيق
+                new androidx.appcompat.app.AlertDialog.Builder(this)
+                        .setTitle("تأكيد الخروج")
+                        .setMessage("هل تريد الخروج من التطبيق؟")
+                        .setPositiveButton("خروج", (dialog, which) -> super.onBackPressed())
+                        .setNegativeButton("إلغاء", null)
+                        .show();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "خطأ في معالجة زر الرجوع", e);
+            super.onBackPressed();
+        }
+    }
+
+    /**
+     * حفظ حالة التطبيق
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        try {
+            if (toolbarTitle != null) {
+                outState.putString("toolbar_title", toolbarTitle.getText().toString());
+            }
+            if (currentFragment != null) {
+                outState.putString("current_fragment", currentFragment.getClass().getSimpleName());
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "تحذير: مشكلة في حفظ الحالة", e);
+        }
+    }
+
+    /**
+     * استرداد حالة التطبيق
+     */
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        try {
+            if (savedInstanceState != null) {
+                String savedTitle = savedInstanceState.getString("toolbar_title", "تطبيق OneUI");
+                updateToolbarTitle(savedTitle);
+                
+                String fragmentName = savedInstanceState.getString("current_fragment");
+                if (fragmentName != null) {
+                    Log.d(TAG, "تم استرداد حالة التطبيق مع Fragment: " + fragmentName);
+                }
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "تحذير: مشكلة في استرداد الحالة", e);
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy تم استدعاؤها");
+        Log.d(TAG, "تم إغلاق التطبيق");
     }
-}
+                }
