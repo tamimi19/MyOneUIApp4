@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     // المتغيرات الأساسية
     private CollapsingToolbarLayout collapsingToolbar;
     private FrameLayout contentContainer;
-    private SwipeRefreshLayout swipeRefreshLayout;
+    // تم إزالة SwipeRefreshLayout لحل مشكلة ArrayIndexOutOfBoundsException
     private Fragment currentFragment;
     
     // الألوان الثابتة
@@ -71,10 +71,9 @@ public class MainActivity extends AppCompatActivity {
      * تهيئة المكونات الأساسية
      */
     private void initializeComponents() {
-        // البحث عن العناصر مع معالجة الأخطاء
+        // البحث عن العناصر مع معالجة الأخطاء - تم إزالة swipeRefreshLayout
         collapsingToolbar = findViewById(R.id.collapsing_toolbar);
         contentContainer = findViewById(R.id.main_container);
-        swipeRefreshLayout = findViewById(R.id.swipe_refresh);
         
         // التحقق من وجود العناصر الأساسية
         if (contentContainer == null) {
@@ -88,17 +87,11 @@ public class MainActivity extends AppCompatActivity {
      * إعداد الواجهة الأساسية
      */
     private void setupInterface() {
-        // إعداد العنوان
+        // إعداد العنوان - تم إزالة إعداد SwipeRefreshLayout لحل مشكلة ArrayIndexOutOfBoundsException
         if (collapsingToolbar != null) {
             collapsingToolbar.setTitle("تطبيق OneUI");
             collapsingToolbar.setCollapsedTitleTextColor(Color.WHITE);
             collapsingToolbar.setExpandedTitleColor(Color.WHITE);
-        }
-        
-        // إعداد السحب للتحديث
-        if (swipeRefreshLayout != null) {
-            swipeRefreshLayout.setColorSchemeColors(ONEUI_BLUE);
-            swipeRefreshLayout.setOnRefreshListener(this::handleRefresh);
         }
         
         Log.d("MainActivity", "تم إعداد الواجهة بنجاح");
@@ -326,34 +319,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * معالجة السحب للتحديث
+     * معالجة التحديث البديل - تم إزالة SwipeRefreshLayout لحل مشكلة ArrayIndexOutOfBoundsException
+     * يتم التحديث الآن عبر الأزرار أو التنقل
      */
-    private void handleRefresh() {
-        new android.os.Handler().postDelayed(() -> {
-            try {
-                if (swipeRefreshLayout != null) {
-                    swipeRefreshLayout.setRefreshing(false);
-                }
-                
-                // تحديث المحتوى الحالي
-                if (currentFragment != null) {
-                    // إعادة تحميل Fragment
-                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                    transaction.detach(currentFragment);
-                    transaction.attach(currentFragment);
-                    transaction.commit();
-                } else {
-                    // تحديث المحتوى الرئيسي
-                    displayHomeContent();
-                }
-                
-                showMessage("تم التحديث بنجاح");
-                
-            } catch (Exception e) {
-                Log.e("MainActivity", "خطأ في التحديث", e);
-                showMessage("فشل في التحديث");
+    private void handleManualRefresh() {
+        try {
+            // تحديث المحتوى الحالي
+            if (currentFragment != null) {
+                // إعادة تحميل Fragment
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.detach(currentFragment);
+                transaction.attach(currentFragment);
+                transaction.commit();
+            } else {
+                // تحديث المحتوى الرئيسي
+                displayHomeContent();
             }
-        }, 1500);
+            
+            showMessage("تم التحديث بنجاح");
+            
+        } catch (Exception e) {
+            Log.e("MainActivity", "خطأ في التحديث", e);
+            showMessage("فشل في التحديث");
+        }
     }
 
     /**
@@ -488,4 +476,4 @@ public class MainActivity extends AppCompatActivity {
             Log.w("MainActivity", "تحذير: مشكلة في استرداد الحالة", e);
         }
     }
-    }
+}
