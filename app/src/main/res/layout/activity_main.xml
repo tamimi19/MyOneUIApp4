@@ -66,30 +66,41 @@
 
                 <Button
                     android:id="@+id/btn_scroll_list"
-                    style="@style/OneUIButton"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@color/oneui_button_normal"
+                    android:textColor="@android:color/white"
+                    android:textAllCaps="false"
                     android:text="قائمة التمرير" />
 
                 <Button
                     android:id="@+id/btn_settings"
-                    style="@style/OneUIButton"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@color/oneui_button_normal"
+                    android:textColor="@android:color/white"
+                    android:textAllCaps="false"
                     android:text="الإعدادات" />
 
                 <Button
                     android:id="@+id/btn_home"
-                    style="@style/OneUIButton"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@color/oneui_button_normal"
+                    android:textColor="@android:color/white"
+                    android:textAllCaps="false"
                     android:text="الرئيسية" />
 
                 <Button
                     android:id="@+id/btn_test_features"
-                    style="@style/OneUIButton"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
+                    android:background="@color/oneui_button_normal"
+                    android:textColor="@android:color/white"
+                    android:textAllCaps="false"
                     android:text="اختبار الميزات" />
 
             </LinearLayout>
