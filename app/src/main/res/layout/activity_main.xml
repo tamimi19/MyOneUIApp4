@@ -11,48 +11,39 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
 
-        <com.google.android.material.appbar.AppBarLayout
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:id="@+id/app_bar"
             android:layout_width="match_parent"
-            android:layout_height="240dp"
+            android:layout_height="200dp"
+            android:background="?attr/colorPrimary"
             android:fitsSystemWindows="true">
 
-            <com.google.android.material.appbar.CollapsingToolbarLayout
-                android:id="@+id/collapsing_toolbar"
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fitsSystemWindows="true"
-                app:title="تطبيق OneUI"
-                app:expandedTitleMarginBottom="16dp"
-                app:expandedTitleMarginStart="16dp"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed">
-
-                <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    app:layout_collapseMode="pin" />
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:titleTextColor="?attr/colorOnPrimary" />
                 
-                <TextView
-                    android:id="@+id/toolbar_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:text="تطبيق OneUI"
-                    android:textAppearance="?attr/textAppearanceHeadline4"
-                    android:textColor="?attr/colorOnSurface" />
+            <TextView
+                android:id="@+id/toolbar_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="تطبيق OneUI"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnPrimary" />
 
-            </com.google.android.material.appbar.CollapsingToolbarLayout>
-
-        </com.google.android.material.appbar.AppBarLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nested_scroll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:layout_marginTop="200dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -81,7 +72,8 @@
                             android:layout_marginBottom="16dp"
                             android:text="مرحباً بك في تطبيق OneUI"
                             android:textAlignment="center"
-                            android:textAppearance="?attr/textAppearanceHeadline4" />
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/welcome_subtitle"
@@ -90,7 +82,7 @@
                             android:layout_marginBottom="24dp"
                             android:text="تطبيق محسن باستخدام مكتبات Samsung OneUI الأصلية"
                             android:textAlignment="center"
-                            android:textAppearance="?attr/textAppearanceBody1" />
+                            android:textSize="16sp" />
 
                         <Button
                             android:id="@+id/btn_scroll_list"
@@ -110,7 +102,7 @@
 
                         <Button
                             android:id="@+id/btn_home"
-                            style="?attr/buttonBarButtonStyle"
+                            style="?android:attr/borderlessButtonStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
@@ -123,17 +115,18 @@
                             android:layout_marginTop="16dp"
                             android:layout_marginBottom="8dp"
                             android:text="ميزات التطبيق:"
-                            android:textAppearance="?attr/textAppearanceHeadline6" />
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="• واجهة مستخدم محسنة بتقنية Samsung OneUI\n• قائمة تمرير متقدمة مع 200 عنصر\n• إعدادات شاملة للتخصيص\n• تسجيل تلقائي للأخطاء\n• تصميم متجاوب يدعم جميع أحجام الشاشات\n• دعم كامل لأجهزة Samsung وغير Samsung"
-                            android:textAppearance="?attr/textAppearanceBody2" />
+                            android:textSize="14sp" />
 
                         <Button
                             android:id="@+id/btn_test_features"
-                            style="?android:attr/buttonBarButtonStyle"
+                            style="?android:attr/borderlessButtonStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="16dp"
