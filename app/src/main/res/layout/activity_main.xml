@@ -1,29 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
 
     <View
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="?attr/colorPrimary" />
+        android:background="@color/oneui_blue" />
         
     <TextView
         android:id="@+id/toolbar_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:layout_below="@id/toolbar"
         android:layout_marginTop="20dp"
         android:text="تطبيق OneUI"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:textColor="@color/oneui_text_primary"
+        android:textStyle="bold" />
 
     <ScrollView
         android:id="@+id/nested_scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/toolbar_title"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="20dp"
+        android:background="@android:color/black">
 
         <FrameLayout
             android:id="@+id/main_container"
@@ -35,42 +40,54 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="16dp"
+                android:background="@android:color/black">
 
                 <TextView
                     android:id="@+id/welcome_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
                     android:text="مرحباً بك"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:textColor="@color/oneui_text_primary"
+                    android:textStyle="bold"
+                    android:gravity="center" />
 
                 <TextView
                     android:id="@+id/welcome_subtitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
                     android:text="تطبيق OneUI"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:textColor="@color/oneui_text_secondary"
+                    android:gravity="center" />
 
                 <Button
                     android:id="@+id/btn_scroll_list"
+                    style="@style/OneUIButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="قائمة التمرير" />
 
                 <Button
                     android:id="@+id/btn_settings"
+                    style="@style/OneUIButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="الإعدادات" />
 
                 <Button
                     android:id="@+id/btn_home"
+                    style="@style/OneUIButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="الرئيسية" />
 
                 <Button
                     android:id="@+id/btn_test_features"
+                    style="@style/OneUIButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="اختبار الميزات" />
