@@ -1,40 +1,47 @@
 package com.example.oneuiapp;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Button;
-import android.view.ViewGroup;
+import android.view.View;
 import android.widget.Toast;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.appcompat.widget.Toolbar;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import androidx.core.widget.NestedScrollView;
 import androidx.drawerlayout.widget.DrawerLayout;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 
 /**
- * MainActivity مبسطة ومحسنة للاستقرار
- * تركز على الوظائف الأساسية مع تجنب التعقيدات غير الضرورية
+ * MainActivity محسنة لاستخدام مكونات OneUI الأصلية
+ * تعتمد على ملف XML بدلاً من إنشاء العناصر برمجياً
  */
 public class MainActivity extends AppCompatActivity {
 
-    // المتغيرات الأساسية
+    // العناصر الأساسية من XML
+    private DrawerLayout drawerLayout;
     private CollapsingToolbarLayout collapsingToolbar;
     private FrameLayout contentContainer;
-    // تم إزالة SwipeRefreshLayout لحل مشكلة ArrayIndexOutOfBoundsException
-    private Fragment currentFragment;
+    private LinearLayout homeContent;
+    private NestedScrollView nestedScrollView;
+    private AppBarLayout appBarLayout;
+    private Toolbar toolbar;
+    private FloatingActionButton fab;
+    private NavigationView navigationView;
     
-    // الألوان الثابتة
-    private static final int ONEUI_BLUE = Color.parseColor("#1976D2");
-    private static final int TEXT_PRIMARY = Color.parseColor("#212121");
-    private static final int TEXT_SECONDARY = Color.parseColor("#757575");
+    // الأزرار
+    private MaterialButton btnScrollList;
+    private MaterialButton btnSettings;
+    private MaterialButton btnHome;
+    
+    // Fragment الحالي
+    private Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,183 +56,153 @@ public class MainActivity extends AppCompatActivity {
         }
         
         try {
-            // تحميل التخطيط
+            // تحميل التخطيط من XML
             setContentView(R.layout.activity_main);
             
             // تهيئة العناصر
-            initializeComponents();
+            initializeViews();
             
             // إعداد الواجهة
-            setupInterface();
+            setupUserInterface();
             
-            // تحميل المحتوى الأساسي
-            displayHomeContent();
+            // إعداد المستمعات
+            setupEventListeners();
             
         } catch (Exception e) {
             Log.e("MainActivity", "خطأ فادح في تهيئة التطبيق", e);
-            createEmergencyInterface();
+            showErrorMessage("فشل في تحميل التطبيق");
         }
     }
 
     /**
-     * تهيئة المكونات الأساسية
+     * تهيئة جميع العناصر من XML
      */
-    private void initializeComponents() {
-        // البحث عن العناصر مع معالجة الأخطاء - تم إزالة swipeRefreshLayout
+    private void initializeViews() {
+        // العناصر الأساسية
+        drawerLayout = findViewById(R.id.drawer_layout);
         collapsingToolbar = findViewById(R.id.collapsing_toolbar);
         contentContainer = findViewById(R.id.main_container);
+        homeContent = findViewById(R.id.home_content);
+        nestedScrollView = findViewById(R.id.nested_scroll);
+        appBarLayout = findViewById(R.id.app_bar);
+        toolbar = findViewById(R.id.toolbar);
+        fab = findViewById(R.id.fab);
+        navigationView = findViewById(R.id.nav_view);
+        
+        // الأزرار
+        btnScrollList = findViewById(R.id.btn_scroll_list);
+        btnSettings = findViewById(R.id.btn_settings);
+        btnHome = findViewById(R.id.btn_home);
         
         // التحقق من وجود العناصر الأساسية
-        if (contentContainer == null) {
-            throw new RuntimeException("لم يتم العثور على main_container في التخطيط");
+        if (contentContainer == null || homeContent == null) {
+            throw new RuntimeException("فشل في العثور على العناصر الأساسية في التخطيط");
         }
         
-        Log.d("MainActivity", "تم تهيئة المكونات بنجاح");
+        Log.d("MainActivity", "تم تهيئة جميع العناصر بنجاح");
     }
 
     /**
      * إعداد الواجهة الأساسية
      */
-    private void setupInterface() {
-        // إعداد العنوان - تم إزالة إعداد SwipeRefreshLayout لحل مشكلة ArrayIndexOutOfBoundsException
+    private void setupUserInterface() {
+        // إعداد شريط الأدوات
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setDisplayShowTitleEnabled(false);
+            }
+        }
+        
+        // إعداد CollapsingToolbar
         if (collapsingToolbar != null) {
             collapsingToolbar.setTitle("تطبيق OneUI");
-            collapsingToolbar.setCollapsedTitleTextColor(Color.WHITE);
-            collapsingToolbar.setExpandedTitleColor(Color.WHITE);
         }
+        
+        // إعداد FAB
+        if (fab != null) {
+            fab.setOnClickListener(v -> {
+                Toast.makeText(this, "الإجراءات السريعة قريباً!", Toast.LENGTH_SHORT).show();
+            });
+        }
+        
+        // إظهار المحتوى الرئيسي افتراضياً
+        showHomeContent();
         
         Log.d("MainActivity", "تم إعداد الواجهة بنجاح");
     }
 
     /**
+     * إعداد مستمعات الأحداث
+     */
+    private void setupEventListeners() {
+        // مستمعات الأزرار الرئيسية
+        if (btnScrollList != null) {
+            btnScrollList.setOnClickListener(v -> navigateToScrollFragment());
+        }
+        
+        if (btnSettings != null) {
+            btnSettings.setOnClickListener(v -> navigateToSettingsFragment());
+        }
+        
+        if (btnHome != null) {
+            btnHome.setOnClickListener(v -> showHomeContent());
+        }
+        
+        // مستمعات القائمة الجانبية
+        if (navigationView != null) {
+            View navHome = navigationView.findViewById(R.id.nav_home);
+            View navSettings = navigationView.findViewById(R.id.nav_settings);
+            View navAbout = navigationView.findViewById(R.id.nav_about);
+            
+            if (navHome != null) {
+                navHome.setOnClickListener(v -> {
+                    showHomeContent();
+                    closeDrawer();
+                });
+            }
+            
+            if (navSettings != null) {
+                navSettings.setOnClickListener(v -> {
+                    navigateToSettingsFragment();
+                    closeDrawer();
+                });
+            }
+            
+            if (navAbout != null) {
+                navAbout.setOnClickListener(v -> {
+                    showAboutDialog();
+                    closeDrawer();
+                });
+            }
+        }
+        
+        Log.d("MainActivity", "تم إعداد مستمعات الأحداث بنجاح");
+    }
+
+    /**
      * عرض المحتوى الرئيسي
      */
-    private void displayHomeContent() {
+    private void showHomeContent() {
         try {
-            // مسح المحتوى السابق
-            contentContainer.removeAllViews();
+            // مسح Fragment الحالي إن وجد
+            clearCurrentFragment();
             
-            // إنشاء التخطيط الرئيسي
-            LinearLayout mainLayout = createMainLayout();
+            // إظهار المحتوى الرئيسي
+            if (homeContent != null) {
+                homeContent.setVisibility(View.VISIBLE);
+            }
             
-            // إضافة المحتوى
-            addWelcomeSection(mainLayout);
-            addNavigationButtons(mainLayout);
-            addInformationSection(mainLayout);
+            // تحديث العنوان
+            updateTitle("تطبيق OneUI");
             
-            // عرض التخطيط
-            contentContainer.addView(mainLayout);
-            
-            Log.d("MainActivity", "تم عرض المحتوى الرئيسي بنجاح");
+            Log.d("MainActivity", "تم عرض المحتوى الرئيسي");
             
         } catch (Exception e) {
             Log.e("MainActivity", "خطأ في عرض المحتوى الرئيسي", e);
-            displayErrorContent("خطأ في تحميل المحتوى الرئيسي");
+            showErrorMessage("فشل في عرض المحتوى الرئيسي");
         }
-    }
-
-    /**
-     * إنشاء التخطيط الأساسي
-     */
-    private LinearLayout createMainLayout() {
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setLayoutParams(new FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 
-            ViewGroup.LayoutParams.WRAP_CONTENT));
-        layout.setPadding(dpToPx(20), dpToPx(20), dpToPx(20), dpToPx(20));
-        
-        return layout;
-    }
-
-    /**
-     * إضافة قسم الترحيب
-     */
-    private void addWelcomeSection(LinearLayout parent) {
-        // العنوان الرئيسي
-        TextView titleView = new TextView(this);
-        titleView.setText("مرحباً بك في تطبيق OneUI");
-        titleView.setTextSize(24);
-        titleView.setTextColor(ONEUI_BLUE);
-        titleView.setPadding(0, 0, 0, dpToPx(8));
-        parent.addView(titleView);
-        
-        // الوصف
-        TextView descriptionView = new TextView(this);
-        descriptionView.setText("تطبيق محسن باستخدام مكتبات Samsung OneUI مع ميزات متقدمة للتنقل والتفاعل");
-        descriptionView.setTextSize(16);
-        descriptionView.setTextColor(TEXT_SECONDARY);
-        descriptionView.setLineSpacing(dpToPx(4), 1.2f);
-        descriptionView.setPadding(0, 0, 0, dpToPx(24));
-        parent.addView(descriptionView);
-    }
-
-    /**
-     * إضافة أزرار التنقل
-     */
-    private void addNavigationButtons(LinearLayout parent) {
-        // زر قائمة التمرير
-        Button scrollButton = createNavigationButton("📋 قائمة التمرير", "عرض 200 عنصر مع تمرير محسن");
-        scrollButton.setOnClickListener(v -> navigateToScrollFragment());
-        parent.addView(scrollButton);
-        
-        addSpacing(parent, 16);
-        
-        // زر الإعدادات
-        Button settingsButton = createNavigationButton("⚙️ الإعدادات", "تخصيص واجهة التطبيق");
-        settingsButton.setOnClickListener(v -> navigateToSettingsFragment());
-        parent.addView(settingsButton);
-        
-        addSpacing(parent, 16);
-        
-        // زر الرئيسية
-        Button homeButton = createNavigationButton("🏠 الرئيسية", "العودة للشاشة الرئيسية");
-        homeButton.setOnClickListener(v -> returnToHome());
-        parent.addView(homeButton);
-    }
-
-    /**
-     * إنشاء زر تنقل محسن
-     */
-    private Button createNavigationButton(String title, String subtitle) {
-        Button button = new Button(this);
-        button.setText(title + "\n" + subtitle);
-        button.setLayoutParams(new LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(70)));
-        button.setTextSize(15);
-        button.setTextColor(Color.WHITE);
-        button.setBackgroundColor(ONEUI_BLUE);
-        button.setAllCaps(false);
-        button.setPadding(dpToPx(16), dpToPx(12), dpToPx(16), dpToPx(12));
-        
-        return button;
-    }
-
-    /**
-     * إضافة قسم المعلومات
-     */
-    private void addInformationSection(LinearLayout parent) {
-        addSpacing(parent, 32);
-        
-        TextView infoTitle = new TextView(this);
-        infoTitle.setText("ميزات التطبيق:");
-        infoTitle.setTextSize(18);
-        infoTitle.setTextColor(TEXT_PRIMARY);
-        infoTitle.setPadding(0, 0, 0, dpToPx(12));
-        parent.addView(infoTitle);
-        
-        TextView infoContent = new TextView(this);
-        infoContent.setText(
-            "• واجهة مستخدم محسنة بتقنية Samsung OneUI\n" +
-            "• قائمة تمرير متقدمة مع 200 عنصر\n" +
-            "• إعدادات شاملة للتخصيص\n" +
-            "• دعم السحب للتحديث\n" +
-            "• تسجيل تلقائي للأخطاء\n" +
-            "• تصميم متجاوب يدعم جميع أحجام الشاشات");
-        infoContent.setTextSize(14);
-        infoContent.setTextColor(TEXT_SECONDARY);
-        infoContent.setLineSpacing(dpToPx(6), 1.4f);
-        parent.addView(infoContent);
     }
 
     /**
@@ -235,10 +212,10 @@ public class MainActivity extends AppCompatActivity {
         try {
             updateTitle("قائمة التمرير");
             loadFragment(new ScrollFragment());
-            showMessage("تم تحميل قائمة التمرير");
+            showToast("تم تحميل قائمة التمرير");
         } catch (Exception e) {
             Log.e("MainActivity", "خطأ في تحميل قائمة التمرير", e);
-            showMessage("فشل في تحميل قائمة التمرير");
+            showToast("فشل في تحميل قائمة التمرير");
         }
     }
 
@@ -249,25 +226,10 @@ public class MainActivity extends AppCompatActivity {
         try {
             updateTitle("الإعدادات");
             loadFragment(new SettingsFragment());
-            showMessage("تم فتح الإعدادات");
+            showToast("تم فتح الإعدادات");
         } catch (Exception e) {
             Log.e("MainActivity", "خطأ في تحميل الإعدادات", e);
-            showMessage("فشل في تحميل الإعدادات");
-        }
-    }
-
-    /**
-     * العودة للرئيسية
-     */
-    private void returnToHome() {
-        try {
-            updateTitle("تطبيق OneUI");
-            clearCurrentFragment();
-            displayHomeContent();
-            showMessage("تم الرجوع للرئيسية");
-        } catch (Exception e) {
-            Log.e("MainActivity", "خطأ في الرجوع للرئيسية", e);
-            showMessage("حدث خطأ أثناء الرجوع للرئيسية");
+            showToast("فشل في تحميل الإعدادات");
         }
     }
 
@@ -279,10 +241,12 @@ public class MainActivity extends AppCompatActivity {
             throw new RuntimeException("contentContainer غير متاح");
         }
         
-        // إزالة المحتوى الحالي
-        contentContainer.removeAllViews();
+        // إخفاء المحتوى الرئيسي
+        if (homeContent != null) {
+            homeContent.setVisibility(View.GONE);
+        }
         
-        // إضافة Fragment الجديد
+        // تحميل Fragment الجديد
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.main_container, fragment);
         transaction.addToBackStack(null);
@@ -303,6 +267,8 @@ public class MainActivity extends AppCompatActivity {
                 transaction.remove(currentFragment);
                 transaction.commit();
                 currentFragment = null;
+                
+                Log.d("MainActivity", "تم مسح Fragment السابق");
             } catch (Exception e) {
                 Log.w("MainActivity", "تحذير: مشكلة في إزالة Fragment", e);
             }
@@ -316,116 +282,49 @@ public class MainActivity extends AppCompatActivity {
         if (collapsingToolbar != null) {
             collapsingToolbar.setTitle(title);
         }
+        
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(title);
+        }
     }
 
     /**
-     * معالجة التحديث البديل - تم إزالة SwipeRefreshLayout لحل مشكلة ArrayIndexOutOfBoundsException
-     * يتم التحديث الآن عبر الأزرار أو التنقل
+     * إغلاق القائمة الجانبية
      */
-    private void handleManualRefresh() {
-        try {
-            // تحديث المحتوى الحالي
-            if (currentFragment != null) {
-                // إعادة تحميل Fragment
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.detach(currentFragment);
-                transaction.attach(currentFragment);
-                transaction.commit();
-            } else {
-                // تحديث المحتوى الرئيسي
-                displayHomeContent();
-            }
-            
-            showMessage("تم التحديث بنجاح");
-            
-        } catch (Exception e) {
-            Log.e("MainActivity", "خطأ في التحديث", e);
-            showMessage("فشل في التحديث");
+    private void closeDrawer() {
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(navigationView)) {
+            drawerLayout.closeDrawer(navigationView);
         }
+    }
+
+    /**
+     * عرض نافذة حول التطبيق
+     */
+    private void showAboutDialog() {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("حول تطبيق OneUI")
+                .setMessage("تطبيق تجريبي مطور باستخدام مكتبات Samsung OneUI الرسمية\n\nالإصدار: 1.0\nالمطور: فريق التطوير")
+                .setPositiveButton("موافق", null)
+                .show();
     }
 
     /**
      * عرض رسالة خطأ
      */
-    private void displayErrorContent(String errorMessage) {
-        try {
-            contentContainer.removeAllViews();
-            
-            LinearLayout errorLayout = new LinearLayout(this);
-            errorLayout.setOrientation(LinearLayout.VERTICAL);
-            errorLayout.setPadding(dpToPx(20), dpToPx(40), dpToPx(20), dpToPx(40));
-            errorLayout.setGravity(android.view.Gravity.CENTER);
-            
-            TextView errorText = new TextView(this);
-            errorText.setText("⚠️ " + errorMessage);
-            errorText.setTextSize(18);
-            errorText.setTextColor(Color.RED);
-            errorText.setGravity(android.view.Gravity.CENTER);
-            
-            Button retryButton = new Button(this);
-            retryButton.setText("إعادة المحاولة");
-            retryButton.setOnClickListener(v -> displayHomeContent());
-            
-            errorLayout.addView(errorText);
-            addSpacing(errorLayout, 24);
-            errorLayout.addView(retryButton);
-            
-            contentContainer.addView(errorLayout);
-            
-        } catch (Exception e) {
-            Log.e("MainActivity", "خطأ حتى في عرض رسالة الخطأ!", e);
-        }
+    private void showErrorMessage(String message) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("خطأ")
+                .setMessage(message)
+                .setPositiveButton("موافق", null)
+                .setNeutralButton("إعادة المحاولة", (dialog, which) -> recreate())
+                .show();
     }
 
     /**
-     * إنشاء واجهة طوارئ في حالة الفشل الكامل
+     * عرض رسالة Toast
      */
-    private void createEmergencyInterface() {
-        try {
-            LinearLayout emergencyLayout = new LinearLayout(this);
-            emergencyLayout.setOrientation(LinearLayout.VERTICAL);
-            emergencyLayout.setBackgroundColor(Color.WHITE);
-            emergencyLayout.setPadding(40, 100, 40, 100);
-            emergencyLayout.setGravity(android.view.Gravity.CENTER);
-            
-            TextView emergencyText = new TextView(this);
-            emergencyText.setText("🚨 خطأ نظام\n\nفشل في تحميل التطبيق\nيرجى التحقق من سجلات الأخطاء");
-            emergencyText.setTextSize(16);
-            emergencyText.setTextColor(Color.RED);
-            emergencyText.setGravity(android.view.Gravity.CENTER);
-            emergencyText.setLineSpacing(dpToPx(8), 1.5f);
-            
-            emergencyLayout.addView(emergencyText);
-            setContentView(emergencyLayout);
-            
-        } catch (Exception e) {
-            Log.e("MainActivity", "فشل حتى في إنشاء واجهة الطوارئ!", e);
-        }
-    }
-
-    /**
-     * إضافة مساحة فارغة
-     */
-    private void addSpacing(LinearLayout parent, int dp) {
-        android.view.View spacer = new android.view.View(this);
-        spacer.setLayoutParams(new LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, dpToPx(dp)));
-        parent.addView(spacer);
-    }
-
-    /**
-     * عرض رسالة للمستخدم
-     */
-    private void showMessage(String message) {
+    private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * تحويل dp إلى pixels
-     */
-    private int dpToPx(int dp) {
-        float density = getResources().getDisplayMetrics().density;
-        return Math.round(dp * density);
     }
 
     /**
@@ -434,12 +333,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         try {
+            // إغلاق القائمة الجانبية إذا كانت مفتوحة
+            if (drawerLayout != null && drawerLayout.isDrawerOpen(navigationView)) {
+                drawerLayout.closeDrawer(navigationView);
+                return;
+            }
+            
+            // العودة للرئيسية إذا كان هناك Fragment
             if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
                 getSupportFragmentManager().popBackStack();
-                returnToHome();
-            } else {
-                super.onBackPressed();
+                showHomeContent();
+                return;
             }
+            
+            // الخروج من التطبيق
+            super.onBackPressed();
+            
         } catch (Exception e) {
             Log.e("MainActivity", "خطأ في معالجة زر الرجوع", e);
             super.onBackPressed();
